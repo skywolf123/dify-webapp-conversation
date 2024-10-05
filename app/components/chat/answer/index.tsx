@@ -124,10 +124,12 @@ const Answer: FC<IAnswerProps> = ({
               {OperationBtn({
                 innerContent: <IconWrapper><ClipboardIcon className='w-4 h-4' /></IconWrapper>,
                 onClick: () => {
+                  // 创建一个临时 div 用于复制
                   const tempDiv = document.createElement('div');
-                  tempDiv.innerHTML = content; // 设置要复制的内容
+                  tempDiv.innerHTML = `<div>${content}</div>`; // 这里可以是你希望渲染的内容
                   document.body.appendChild(tempDiv);
   
+                  // 获取渲染后的内容
                   const range = document.createRange();
                   range.selectNodeContents(tempDiv);
                   const selection = window.getSelection();
