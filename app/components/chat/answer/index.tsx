@@ -1,6 +1,6 @@
 'use client'
 import type { FC } from 'react'
-import React from 'react'
+import React, { useRef } from 'react'
 import { HandThumbDownIcon, HandThumbUpIcon, ClipboardIcon } from '@heroicons/react/24/outline'
 import { useTranslation } from 'react-i18next'
 import LoadingAnim from '../loading-anim'
@@ -76,6 +76,9 @@ const Answer: FC<IAnswerProps> = ({
 
   const { t } = useTranslation()
 
+  // 创建 ref 用于引用渲染的内容
+  const contentRef = useRef<HTMLDivElement>(null)
+
   /**
  * Render feedback results (distinguish between users and administrators)
  * User reviews cannot be cancelled in Console
@@ -124,48 +127,37 @@ const Answer: FC<IAnswerProps> = ({
               {OperationBtn({
                 innerContent: <IconWrapper><ClipboardIcon className='w-4 h-4' /></IconWrapper>,
                 onClick: () => {
-                  // 创建一个临时 div 用于复制
-                  const tempDiv = document.createElement('div');
-                  tempDiv.innerHTML = `<div>${content}</div>`; // 这里可以是你希望渲染的内容
-                  document.body.appendChild(tempDiv);
-  
-                  // 获取渲染后的内容
-                  const range = document.createRange();
-                  range.selectNodeContents(tempDiv);
-                  const selection = window.getSelection();
-                  selection.removeAllRanges();
-                  selection.addRange(range);
-  
-                  document.execCommand('copy'); // 复制
-                  selection.removeAllRanges(); // 清除选择
-                  document.body.removeChild(tempDiv); // 移除临时元素
-  
-                  alert('内容已复制到剪贴板！');
+                  if (contentRef.current) {
+                    const range = document.createRange();
+                    range.selectNodeContents(contentRef.current);
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+
+                    document.execCommand('copy'); // 复制
+                    selection.removeAllRanges(); // 清除选择
+
+                    alert('内容已复制到剪贴板！');
+                  }
                 },
               })}
             </Tooltip>
             <Tooltip selector={`user-feedback-${randomString(16)}`} content={t('common.operation.like') as string}>
-              {OperationBtn({
-                innerContent: <IconWrapper><RatingIcon isLike={true} /></IconWrapper>,
-                onClick: () => onFeedback?.(id, { rating: 'like' }),
-              })}
+              {OperationBtn({ innerContent: <IconWrapper><RatingIcon isLike={true} /></IconWrapper>, onClick: () => onFeedback?.(id, { rating: 'like' }) })}
             </Tooltip>
             <Tooltip selector={`user-feedback-${randomString(16)}`} content={t('common.operation.dislike') as string}>
-              {OperationBtn({
-                innerContent: <IconWrapper><RatingIcon isLike={false} /></IconWrapper>,
-                onClick: () => onFeedback?.(id, { rating: 'dislike' }),
-              })}
+              {OperationBtn({ innerContent: <IconWrapper><RatingIcon isLike={false} /></IconWrapper>, onClick: () => onFeedback?.(id, { rating: 'dislike' }) })}
             </Tooltip>
           </div>
         );
-    };
-  
+    }
+
     return (
       <div className={`${s.itemOperation} flex gap-2`}>
         {userOperation()}
       </div>
-    );
-  };  
+    )
+  }
 
   const getImgs = (list?: VisionFile[]) => {
     if (!list)
