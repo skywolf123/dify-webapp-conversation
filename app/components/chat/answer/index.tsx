@@ -16,37 +16,6 @@ import { Markdown } from '@/app/components/base/markdown'
 import type { Emoji } from '@/types/tools'
 
 
-// 复制按钮组件
-const CopyButton: FC<{ htmlContent: string }> = ({ htmlContent }) => {
-  const handleCopy = () => {
-    const tempDiv = document.createElement('div')
-    tempDiv.innerHTML = htmlContent // 设置要复制的内容
-    document.body.appendChild(tempDiv)
-
-    const range = document.createRange()
-    range.selectNodeContents(tempDiv)
-    const selection = window.getSelection()
-    selection.removeAllRanges()
-    selection.addRange(range)
-
-    document.execCommand('copy') // 复制
-    selection.removeAllRanges() // 清除选择
-    document.body.removeChild(tempDiv) // 移除临时元素
-
-    alert('内容已复制到剪贴板！')
-  }
-
-  return (
-    <div
-      className={`relative box-border flex items-center justify-center h-7 w-7 p-0.5 rounded-lg bg-white cursor-pointer text-gray-500 hover:text-gray-800`}
-      onClick={handleCopy}
-      style={{ boxShadow: '0px 4px 6px -1px rgba(0, 0, 0, 0.1), 0px 2px 4px -2px rgba(0, 0, 0, 0.05)' }}
-    >
-      <ClipboardIcon className='w-4 h-4' />
-    </div>
-  )
-}
-
 const OperationBtn = ({ innerContent, onClick, className }: { innerContent: React.ReactNode; onClick?: () => void; className?: string }) => (
   <div
     className={`relative box-border flex items-center justify-center h-7 w-7 p-0.5 rounded-lg bg-white cursor-pointer text-gray-500 hover:text-gray-800 ${className ?? ''}`}
@@ -149,25 +118,52 @@ const Answer: FC<IAnswerProps> = ({
     const userOperation = () => {
       return feedback?.rating
         ? null
-        : <div className='flex gap-1'>
-          <Tooltip selector={`user-copy-${randomString(16)}`} content="复制内容">
-            <CopyButton htmlContent={content} /> {/* 添加复制按钮 */}
-          </Tooltip>
-          <Tooltip selector={`user-feedback-${randomString(16)}`} content={t('common.operation.like') as string}>
-            {OperationBtn({ innerContent: <IconWrapper><RatingIcon isLike={true} /></IconWrapper>, onClick: () => onFeedback?.(id, { rating: 'like' }) })}
-          </Tooltip>
-          <Tooltip selector={`user-feedback-${randomString(16)}`} content={t('common.operation.dislike') as string}>
-            {OperationBtn({ innerContent: <IconWrapper><RatingIcon isLike={false} /></IconWrapper>, onClick: () => onFeedback?.(id, { rating: 'dislike' }) })}
-          </Tooltip>
-        </div>
-    }
-
+        : (
+          <div className='flex gap-1'>
+            <Tooltip selector={`user-copy-${randomString(16)}`} content="复制内容">
+              {OperationBtn({
+                innerContent: <IconWrapper><ClipboardIcon className='w-4 h-4' /></IconWrapper>,
+                onClick: () => {
+                  const tempDiv = document.createElement('div');
+                  tempDiv.innerHTML = content; // 设置要复制的内容
+                  document.body.appendChild(tempDiv);
+  
+                  const range = document.createRange();
+                  range.selectNodeContents(tempDiv);
+                  const selection = window.getSelection();
+                  selection.removeAllRanges();
+                  selection.addRange(range);
+  
+                  document.execCommand('copy'); // 复制
+                  selection.removeAllRanges(); // 清除选择
+                  document.body.removeChild(tempDiv); // 移除临时元素
+  
+                  alert('内容已复制到剪贴板！');
+                },
+              })}
+            </Tooltip>
+            <Tooltip selector={`user-feedback-${randomString(16)}`} content={t('common.operation.like') as string}>
+              {OperationBtn({
+                innerContent: <IconWrapper><RatingIcon isLike={true} /></IconWrapper>,
+                onClick: () => onFeedback?.(id, { rating: 'like' }),
+              })}
+            </Tooltip>
+            <Tooltip selector={`user-feedback-${randomString(16)}`} content={t('common.operation.dislike') as string}>
+              {OperationBtn({
+                innerContent: <IconWrapper><RatingIcon isLike={false} /></IconWrapper>,
+                onClick: () => onFeedback?.(id, { rating: 'dislike' }),
+              })}
+            </Tooltip>
+          </div>
+        );
+    };
+  
     return (
       <div className={`${s.itemOperation} flex gap-2`}>
         {userOperation()}
       </div>
-    )
-  }
+    );
+  };  
 
   const getImgs = (list?: VisionFile[]) => {
     if (!list)
