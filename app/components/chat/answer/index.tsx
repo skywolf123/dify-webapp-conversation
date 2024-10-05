@@ -1,6 +1,6 @@
 'use client'
 import type { FC } from 'react'
-import React from 'react'
+import React, { useRef } from 'react'
 import { HandThumbDownIcon, HandThumbUpIcon, ClipboardIcon } from '@heroicons/react/24/outline'
 import { useTranslation } from 'react-i18next'
 import LoadingAnim from '../loading-anim'
@@ -76,6 +76,9 @@ const Answer: FC<IAnswerProps> = ({
 
   const { t } = useTranslation()
 
+  // 创建 ref 用于引用 Markdown 渲染的内容
+  const markdownRef = useRef<HTMLDivElement>(null)
+
   /**
  * Render feedback results (distinguish between users and administrators)
  * User reviews cannot be cancelled in Console
@@ -84,12 +87,9 @@ const Answer: FC<IAnswerProps> = ({
  * @returns comp
  */
   const renderFeedbackRating = (rating: MessageRating | undefined) => {
-    if (!rating)
-      return null
-
+    if (!rating) return null
     const isLike = rating === 'like'
     const ratingIconClassname = isLike ? 'text-primary-600 bg-primary-100 hover:bg-primary-200' : 'text-red-600 bg-red-100 hover:bg-red-200'
-    // The tooltip is always displayed, but the content is different for different scenarios.
     return (
       <Tooltip
         selector={`user-feedback-${randomString(16)}`}
@@ -120,55 +120,36 @@ const Answer: FC<IAnswerProps> = ({
         ? null
         : (
           <div className='flex gap-1'>
-            <Tooltip selector={`user-copy-${Math.random()}`} content="复制内容">
-              <div
-                className='relative box-border flex items-center justify-center h-7 w-7 p-0.5 rounded-lg bg-white cursor-pointer text-gray-500 hover:text-gray-800'
-                onClick={() => {
-                  // 创建一个临时元素来渲染 Markdown
-                  const tempDiv = document.createElement('div');
-                  tempDiv.innerHTML = content; // 使用 Markdown 转换后的 HTML
-                  
-                  // 这里可以直接使用 Markdown 组件来渲染
-                  const markdownComponent = <Markdown content={content} />;
-                  const container = document.createElement('div');
-                  ReactDOM.render(markdownComponent, container);
-                  document.body.appendChild(container);
-
-                  // 选择并复制内容
-                  const range = document.createRange();
-                  range.selectNodeContents(container);
-                  const selection = window.getSelection();
-                  selection.removeAllRanges();
-                  selection.addRange(range);
-                  document.execCommand('copy');
-                  selection.removeAllRanges();
-                  document.body.removeChild(container); // 清理
-
-                  alert('内容已复制到剪贴板！');
-                }}
-              >
-                <ClipboardIcon className='w-4 h-4' />
-              </div>
+            <Tooltip selector={`user-copy-${randomString(16)}`} content="复制内容">
+              {OperationBtn({
+                innerContent: <IconWrapper><ClipboardIcon className='w-4 h-4' /></IconWrapper>,
+                onClick: () => {
+                  if (markdownRef.current) {
+                    const htmlContent = markdownRef.current.innerHTML; // 获取渲染后的 HTML 内容
+                    navigator.clipboard.writeText(htmlContent).then(() => {
+                      alert('内容已复制到剪贴板！');
+                    }).catch(err => {
+                      console.error('复制失败', err);
+                    });
+                  }
+                },
+              })}
             </Tooltip>
-            <Tooltip selector={`user-feedback-${Math.random()}`} content={t('common.operation.like')}>
-              <div onClick={() => onFeedback?.(id, { rating: 'like' })}>
-                <HandThumbUpIcon className='w-4 h-4' />
-              </div>
+            <Tooltip selector={`user-feedback-${randomString(16)}`} content={t('common.operation.like') as string}>
+              {OperationBtn({ innerContent: <IconWrapper><RatingIcon isLike={true} /></IconWrapper>, onClick: () => onFeedback?.(id, { rating: 'like' }) })}
             </Tooltip>
-            <Tooltip selector={`user-feedback-${Math.random()}`} content={t('common.operation.dislike')}>
-              <div onClick={() => onFeedback?.(id, { rating: 'dislike' })}>
-                <HandThumbDownIcon className='w-4 h-4' />
-              </div>
+            <Tooltip selector={`user-feedback-${randomString(16)}`} content={t('common.operation.dislike') as string}>
+              {OperationBtn({ innerContent: <IconWrapper><RatingIcon isLike={false} /></IconWrapper>, onClick: () => onFeedback?.(id, { rating: 'dislike' }) })}
             </Tooltip>
           </div>
         );
     }
 
     return (
-      <div className='flex gap-2'>
+      <div className={`${s.itemOperation} flex gap-2`}>
         {userOperation()}
       </div>
-    );
+    )
   }
 
   const getImgs = (list?: VisionFile[]) => {
@@ -206,18 +187,12 @@ const Answer: FC<IAnswerProps> = ({
     <div key={id}>
       <div className='flex items-start'>
         <div className={`${s.answerIcon} w-10 h-10 shrink-0`}>
-          {isResponding
-            && <div className={s.typeingIcon}>
-              <LoadingAnim type='avatar' />
-            </div>
-          }
+          {isResponding && <LoadingAnim type='avatar' />}
         </div>
         <div className={`${s.answerWrap}`}>
           <div className={`${s.answer} relative text-sm text-gray-900`}>
-            <div className={`ml-2 py-3 px-4 bg-gray-100 rounded-tr-2xl rounded-b-2xl ${workflowProcess && 'min-w-[480px]'}`}>
-              {workflowProcess && (
-                <WorkflowProcess data={workflowProcess} hideInfo />
-              )}
+            <div ref={markdownRef} className={`ml-2 py-3 px-4 bg-gray-100 rounded-tr-2xl rounded-b-2xl ${workflowProcess && 'min-w-[480px]'}`}>
+              {workflowProcess && <WorkflowProcess data={workflowProcess} hideInfo />}
               {(isResponding && (isAgentMode ? (!content && (agent_thoughts || []).filter(item => !!item.thought || !!item.tool).length === 0) : !content))
                 ? (
                   <div className='flex items-center justify-center w-6 h-5'>
@@ -225,13 +200,23 @@ const Answer: FC<IAnswerProps> = ({
                   </div>
                 )
                 : (isAgentMode
-                  ? agentModeAnswer
-                  : (
-                    <Markdown content={content} />
-                  ))}
+                  ? agent_thoughts.map((item, index) => (
+                      <div key={index}>
+                        {item.thought && <Markdown content={item.thought} />}
+                        {!!item.tool && (
+                          <Thought
+                            thought={item}
+                            allToolIcons={allToolIcons || {}}
+                            isFinished={!!item.observation || !isResponding}
+                          />
+                        )}
+                      </div>
+                    ))
+                  : <Markdown content={content} />))}
             </div>
             <div className='absolute top-[-14px] right-[-14px] flex flex-row justify-end gap-1'>
               {!feedbackDisabled && !item.feedbackDisabled && renderItemOperation()}
+              {!feedbackDisabled && renderFeedbackRating(feedback?.rating)}
             </div>
           </div>
         </div>
