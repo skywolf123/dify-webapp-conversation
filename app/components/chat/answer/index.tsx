@@ -1,7 +1,7 @@
 'use client'
 import type { FC } from 'react'
 import React from 'react'
-import { HandThumbDownIcon, HandThumbUpIcon } from '@heroicons/react/24/outline'
+import { HandThumbDownIcon, HandThumbUpIcon, ClipboardIcon } from '@heroicons/react/24/outline'
 import { useTranslation } from 'react-i18next'
 import LoadingAnim from '../loading-anim'
 import type { FeedbackFunc } from '../type'
@@ -109,6 +109,27 @@ const Answer: FC<IAnswerProps> = ({
     )
   }
 
+  const CopyButton: FC<{ content: string }> = ({ content }) => {
+    const handleCopy = () => {
+      // 创建一个临时的 textarea 元素
+      const tempTextArea = document.createElement('textarea');
+      tempTextArea.value = content; // 将内容设置为要复制的文本
+      document.body.appendChild(tempTextArea);
+      tempTextArea.select(); // 选择文本
+      document.execCommand('copy'); // 复制内容
+      document.body.removeChild(tempTextArea); // 移除临时元素
+  
+      alert('内容已复制到剪贴板！');
+    };
+  
+    return (
+      <OperationBtn
+        innerContent={<IconWrapper><ClipboardIcon className='w-4 h-4' /></IconWrapper>}
+        onClick={handleCopy}
+      />
+    );
+  };
+
   /**
    * Different scenarios have different operation items.
    * @returns comp
@@ -117,22 +138,27 @@ const Answer: FC<IAnswerProps> = ({
     const userOperation = () => {
       return feedback?.rating
         ? null
-        : <div className='flex gap-1'>
-          <Tooltip selector={`user-feedback-${randomString(16)}`} content={t('common.operation.like') as string}>
-            {OperationBtn({ innerContent: <IconWrapper><RatingIcon isLike={true} /></IconWrapper>, onClick: () => onFeedback?.(id, { rating: 'like' }) })}
-          </Tooltip>
-          <Tooltip selector={`user-feedback-${randomString(16)}`} content={t('common.operation.dislike') as string}>
-            {OperationBtn({ innerContent: <IconWrapper><RatingIcon isLike={false} /></IconWrapper>, onClick: () => onFeedback?.(id, { rating: 'dislike' }) })}
-          </Tooltip>
-        </div>
-    }
+        : (
+          <div className='flex gap-1'>
+            <Tooltip selector={`user-copy-${randomString(16)}`} content="复制内容">
+              <CopyButton content={content} /> {/* 添加复制按钮 */}
+            </Tooltip>
+            <Tooltip selector={`user-feedback-${randomString(16)}`} content={t('common.operation.like') as string}>
+              {OperationBtn({ innerContent: <IconWrapper><RatingIcon isLike={true} /></IconWrapper>, onClick: () => onFeedback?.(id, { rating: 'like' }) })}
+            </Tooltip>
+            <Tooltip selector={`user-feedback-${randomString(16)}`} content={t('common.operation.dislike') as string}>
+              {OperationBtn({ innerContent: <IconWrapper><RatingIcon isLike={false} /></IconWrapper>, onClick: () => onFeedback?.(id, { rating: 'dislike' }) })}
+            </Tooltip>
+          </div>
+        );
+    };
 
     return (
       <div className={`${s.itemOperation} flex gap-2`}>
         {userOperation()}
       </div>
-    )
-  }
+    );
+  };
 
   const getImgs = (list?: VisionFile[]) => {
     if (!list)
