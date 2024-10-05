@@ -1,6 +1,6 @@
 'use client'
 import type { FC } from 'react'
-import React, { useRef } from 'react'
+import React from 'react'
 import { HandThumbDownIcon, HandThumbUpIcon, ClipboardIcon } from '@heroicons/react/24/outline'
 import { useTranslation } from 'react-i18next'
 import LoadingAnim from '../loading-anim'
@@ -76,9 +76,6 @@ const Answer: FC<IAnswerProps> = ({
 
   const { t } = useTranslation()
 
-  // 创建 ref 用于引用渲染的内容
-  const contentRef = useRef<HTMLDivElement>(null)
-
   /**
  * Render feedback results (distinguish between users and administrators)
  * User reviews cannot be cancelled in Console
@@ -123,40 +120,55 @@ const Answer: FC<IAnswerProps> = ({
         ? null
         : (
           <div className='flex gap-1'>
-            <Tooltip selector={`user-copy-${randomString(16)}`} content="复制内容">
-              {OperationBtn({
-                innerContent: <IconWrapper><ClipboardIcon className='w-4 h-4' /></IconWrapper>,
-                onClick: () => {
-                  if (contentRef.current) {
-                    const range = document.createRange();
-                    range.selectNodeContents(contentRef.current);
-                    const selection = window.getSelection();
-                    selection.removeAllRanges();
-                    selection.addRange(range);
+            <Tooltip selector={`user-copy-${Math.random()}`} content="复制内容">
+              <div
+                className='relative box-border flex items-center justify-center h-7 w-7 p-0.5 rounded-lg bg-white cursor-pointer text-gray-500 hover:text-gray-800'
+                onClick={() => {
+                  // 创建一个临时元素来渲染 Markdown
+                  const tempDiv = document.createElement('div');
+                  tempDiv.innerHTML = content; // 使用 Markdown 转换后的 HTML
+                  
+                  // 这里可以直接使用 Markdown 组件来渲染
+                  const markdownComponent = <Markdown content={content} />;
+                  const container = document.createElement('div');
+                  ReactDOM.render(markdownComponent, container);
+                  document.body.appendChild(container);
 
-                    document.execCommand('copy'); // 复制
-                    selection.removeAllRanges(); // 清除选择
+                  // 选择并复制内容
+                  const range = document.createRange();
+                  range.selectNodeContents(container);
+                  const selection = window.getSelection();
+                  selection.removeAllRanges();
+                  selection.addRange(range);
+                  document.execCommand('copy');
+                  selection.removeAllRanges();
+                  document.body.removeChild(container); // 清理
 
-                    alert('内容已复制到剪贴板！');
-                  }
-                },
-              })}
+                  alert('内容已复制到剪贴板！');
+                }}
+              >
+                <ClipboardIcon className='w-4 h-4' />
+              </div>
             </Tooltip>
-            <Tooltip selector={`user-feedback-${randomString(16)}`} content={t('common.operation.like') as string}>
-              {OperationBtn({ innerContent: <IconWrapper><RatingIcon isLike={true} /></IconWrapper>, onClick: () => onFeedback?.(id, { rating: 'like' }) })}
+            <Tooltip selector={`user-feedback-${Math.random()}`} content={t('common.operation.like')}>
+              <div onClick={() => onFeedback?.(id, { rating: 'like' })}>
+                <HandThumbUpIcon className='w-4 h-4' />
+              </div>
             </Tooltip>
-            <Tooltip selector={`user-feedback-${randomString(16)}`} content={t('common.operation.dislike') as string}>
-              {OperationBtn({ innerContent: <IconWrapper><RatingIcon isLike={false} /></IconWrapper>, onClick: () => onFeedback?.(id, { rating: 'dislike' }) })}
+            <Tooltip selector={`user-feedback-${Math.random()}`} content={t('common.operation.dislike')}>
+              <div onClick={() => onFeedback?.(id, { rating: 'dislike' })}>
+                <HandThumbDownIcon className='w-4 h-4' />
+              </div>
             </Tooltip>
           </div>
         );
     }
 
     return (
-      <div className={`${s.itemOperation} flex gap-2`}>
+      <div className='flex gap-2'>
         {userOperation()}
       </div>
-    )
+    );
   }
 
   const getImgs = (list?: VisionFile[]) => {
