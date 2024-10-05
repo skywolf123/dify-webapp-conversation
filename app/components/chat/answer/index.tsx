@@ -19,22 +19,22 @@ import type { Emoji } from '@/types/tools'
 // 复制按钮组件
 const CopyButton: FC<{ htmlContent: string }> = ({ htmlContent }) => {
   const handleCopy = () => {
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = htmlContent; // 设置要复制的内容
-    document.body.appendChild(tempDiv);
+    const tempDiv = document.createElement('div')
+    tempDiv.innerHTML = htmlContent // 设置要复制的内容
+    document.body.appendChild(tempDiv)
 
-    const range = document.createRange();
-    range.selectNodeContents(tempDiv);
-    const selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
+    const range = document.createRange()
+    range.selectNodeContents(tempDiv)
+    const selection = window.getSelection()
+    selection.removeAllRanges()
+    selection.addRange(range)
 
-    document.execCommand('copy'); // 复制
-    selection.removeAllRanges(); // 清除选择
-    document.body.removeChild(tempDiv); // 移除临时元素
+    document.execCommand('copy') // 复制
+    selection.removeAllRanges() // 清除选择
+    document.body.removeChild(tempDiv) // 移除临时元素
 
-    alert('内容已复制到剪贴板！');
-  };
+    alert('内容已复制到剪贴板！')
+  }
 
   return (
     <div
@@ -44,7 +44,7 @@ const CopyButton: FC<{ htmlContent: string }> = ({ htmlContent }) => {
     >
       <ClipboardIcon className='w-4 h-4' />
     </div>
-  );
+  )
 }
 
 const OperationBtn = ({ innerContent, onClick, className }: { innerContent: React.ReactNode; onClick?: () => void; className?: string }) => (
@@ -149,19 +149,17 @@ const Answer: FC<IAnswerProps> = ({
     const userOperation = () => {
       return feedback?.rating
         ? null
-        : (
-          <div className='flex gap-1'>
-            <Tooltip selector={`user-copy-${randomString(16)}`} content="复制内容">
-              <CopyButton htmlContent={content} /> {/* 添加复制按钮 */}
-            </Tooltip>
-            <Tooltip selector={`user-feedback-${randomString(16)}`} content={t('common.operation.like') as string}>
-              {OperationBtn({ innerContent: <RatingIcon isLike={true} />, onClick: () => onFeedback?.(id, { rating: 'like' }) })}
-            </Tooltip>
-            <Tooltip selector={`user-feedback-${randomString(16)}`} content={t('common.operation.dislike') as string}>
-              {OperationBtn({ innerContent: <RatingIcon isLike={false} />, onClick: () => onFeedback?.(id, { rating: 'dislike' }) })}
-            </Tooltip>
-          </div>
-        );
+        : <div className='flex gap-1'>
+          <Tooltip selector={`user-copy-${randomString(16)}`} content="复制内容">
+            <CopyButton htmlContent={content} /> {/* 添加复制按钮 */}
+          </Tooltip>
+          <Tooltip selector={`user-feedback-${randomString(16)}`} content={t('common.operation.like') as string}>
+            {OperationBtn({ innerContent: <IconWrapper><RatingIcon isLike={true} /></IconWrapper>, onClick: () => onFeedback?.(id, { rating: 'like' }) })}
+          </Tooltip>
+          <Tooltip selector={`user-feedback-${randomString(16)}`} content={t('common.operation.dislike') as string}>
+            {OperationBtn({ innerContent: <IconWrapper><RatingIcon isLike={false} /></IconWrapper>, onClick: () => onFeedback?.(id, { rating: 'dislike' }) })}
+          </Tooltip>
+        </div>
     }
 
     return (
@@ -206,24 +204,32 @@ const Answer: FC<IAnswerProps> = ({
     <div key={id}>
       <div className='flex items-start'>
         <div className={`${s.answerIcon} w-10 h-10 shrink-0`}>
-          {isResponding && <div className={s.typeingIcon}><LoadingAnim type='avatar' /></div>}
+          {isResponding
+            && <div className={s.typeingIcon}>
+              <LoadingAnim type='avatar' />
+            </div>
+          }
         </div>
         <div className={`${s.answerWrap}`}>
           <div className={`${s.answer} relative text-sm text-gray-900`}>
             <div className={`ml-2 py-3 px-4 bg-gray-100 rounded-tr-2xl rounded-b-2xl ${workflowProcess && 'min-w-[480px]'}`}>
-              {workflowProcess && <WorkflowProcess data={workflowProcess} hideInfo />}
+              {workflowProcess && (
+                <WorkflowProcess data={workflowProcess} hideInfo />
+              )}
               {(isResponding && (isAgentMode ? (!content && (agent_thoughts || []).filter(item => !!item.thought || !!item.tool).length === 0) : !content))
                 ? (
                   <div className='flex items-center justify-center w-6 h-5'>
                     <LoadingAnim type='text' />
                   </div>
                 )
-                : (isAgentMode ? agentModeAnswer : <Markdown content={content} />))}
+                : (isAgentMode
+                  ? agentModeAnswer
+                  : (
+                    <Markdown content={content} />
+                  ))}
             </div>
             <div className='absolute top-[-14px] right-[-14px] flex flex-row justify-end gap-1'>
               {!feedbackDisabled && !item.feedbackDisabled && renderItemOperation()}
-              {/* User feedback must be displayed */}
-              {!feedbackDisabled && renderFeedbackRating(feedback?.rating)}
             </div>
           </div>
         </div>
