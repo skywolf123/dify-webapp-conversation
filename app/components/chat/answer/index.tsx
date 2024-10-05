@@ -15,6 +15,38 @@ import WorkflowProcess from '@/app/components/workflow/workflow-process'
 import { Markdown } from '@/app/components/base/markdown'
 import type { Emoji } from '@/types/tools'
 
+
+// 复制按钮组件
+const CopyButton: FC<{ htmlContent: string }> = ({ htmlContent }) => {
+  const handleCopy = () => {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlContent; // 设置要复制的内容
+    document.body.appendChild(tempDiv);
+
+    const range = document.createRange();
+    range.selectNodeContents(tempDiv);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    document.execCommand('copy'); // 复制
+    selection.removeAllRanges(); // 清除选择
+    document.body.removeChild(tempDiv); // 移除临时元素
+
+    alert('内容已复制到剪贴板！');
+  };
+
+  return (
+    <div
+      className={`relative box-border flex items-center justify-center h-7 w-7 p-0.5 rounded-lg bg-white cursor-pointer text-gray-500 hover:text-gray-800`}
+      onClick={handleCopy}
+      style={{ boxShadow: '0px 4px 6px -1px rgba(0, 0, 0, 0.1), 0px 2px 4px -2px rgba(0, 0, 0, 0.05)' }}
+    >
+      <ClipboardIcon className='w-4 h-4' />
+    </div>
+  );
+}
+
 const OperationBtn = ({ innerContent, onClick, className }: { innerContent: React.ReactNode; onClick?: () => void; className?: string }) => (
   <div
     className={`relative box-border flex items-center justify-center h-7 w-7 p-0.5 rounded-lg bg-white cursor-pointer text-gray-500 hover:text-gray-800 ${className ?? ''}`}
@@ -109,27 +141,6 @@ const Answer: FC<IAnswerProps> = ({
     )
   }
 
-  const CopyButton: FC<{ content: string }> = ({ content }) => {
-    const handleCopy = () => {
-      // 创建一个临时的 textarea 元素
-      const tempTextArea = document.createElement('textarea');
-      tempTextArea.value = content; // 将内容设置为要复制的文本
-      document.body.appendChild(tempTextArea);
-      tempTextArea.select(); // 选择文本
-      document.execCommand('copy'); // 复制内容
-      document.body.removeChild(tempTextArea); // 移除临时元素
-  
-      alert('内容已复制到剪贴板！');
-    };
-  
-    return (
-      <OperationBtn
-        innerContent={<IconWrapper><ClipboardIcon className='w-4 h-4' /></IconWrapper>}
-        onClick={handleCopy}
-      />
-    );
-  };
-
   /**
    * Different scenarios have different operation items.
    * @returns comp
@@ -141,24 +152,24 @@ const Answer: FC<IAnswerProps> = ({
         : (
           <div className='flex gap-1'>
             <Tooltip selector={`user-copy-${randomString(16)}`} content="复制内容">
-              <CopyButton content={content} /> {/* 添加复制按钮 */}
+              <CopyButton htmlContent={content} /> {/* 添加复制按钮 */}
             </Tooltip>
             <Tooltip selector={`user-feedback-${randomString(16)}`} content={t('common.operation.like') as string}>
-              {OperationBtn({ innerContent: <IconWrapper><RatingIcon isLike={true} /></IconWrapper>, onClick: () => onFeedback?.(id, { rating: 'like' }) })}
+              {OperationBtn({ innerContent: <RatingIcon isLike={true} />, onClick: () => onFeedback?.(id, { rating: 'like' }) })}
             </Tooltip>
             <Tooltip selector={`user-feedback-${randomString(16)}`} content={t('common.operation.dislike') as string}>
-              {OperationBtn({ innerContent: <IconWrapper><RatingIcon isLike={false} /></IconWrapper>, onClick: () => onFeedback?.(id, { rating: 'dislike' }) })}
+              {OperationBtn({ innerContent: <RatingIcon isLike={false} />, onClick: () => onFeedback?.(id, { rating: 'dislike' }) })}
             </Tooltip>
           </div>
         );
-    };
+    }
 
     return (
       <div className={`${s.itemOperation} flex gap-2`}>
         {userOperation()}
       </div>
-    );
-  };
+    )
+  }
 
   const getImgs = (list?: VisionFile[]) => {
     if (!list)
@@ -195,29 +206,19 @@ const Answer: FC<IAnswerProps> = ({
     <div key={id}>
       <div className='flex items-start'>
         <div className={`${s.answerIcon} w-10 h-10 shrink-0`}>
-          {isResponding
-            && <div className={s.typeingIcon}>
-              <LoadingAnim type='avatar' />
-            </div>
-          }
+          {isResponding && <div className={s.typeingIcon}><LoadingAnim type='avatar' /></div>}
         </div>
         <div className={`${s.answerWrap}`}>
           <div className={`${s.answer} relative text-sm text-gray-900`}>
             <div className={`ml-2 py-3 px-4 bg-gray-100 rounded-tr-2xl rounded-b-2xl ${workflowProcess && 'min-w-[480px]'}`}>
-              {workflowProcess && (
-                <WorkflowProcess data={workflowProcess} hideInfo />
-              )}
+              {workflowProcess && <WorkflowProcess data={workflowProcess} hideInfo />}
               {(isResponding && (isAgentMode ? (!content && (agent_thoughts || []).filter(item => !!item.thought || !!item.tool).length === 0) : !content))
                 ? (
                   <div className='flex items-center justify-center w-6 h-5'>
                     <LoadingAnim type='text' />
                   </div>
                 )
-                : (isAgentMode
-                  ? agentModeAnswer
-                  : (
-                    <Markdown content={content} />
-                  ))}
+                : (isAgentMode ? agentModeAnswer : <Markdown content={content} />))}
             </div>
             <div className='absolute top-[-14px] right-[-14px] flex flex-row justify-end gap-1'>
               {!feedbackDisabled && !item.feedbackDisabled && renderItemOperation()}
