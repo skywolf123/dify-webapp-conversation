@@ -1,7 +1,7 @@
 'use client'
 import type { FC } from 'react'
 import React, { useRef, useState } from 'react'
-import { HandThumbDownIcon, HandThumbUpIcon, ClipboardDocumentIcon, ClipboardDocumentCheckIcon } from '@heroicons/react/24/outline'
+import { HandThumbDownIcon, HandThumbUpIcon, DocumentIcon, DocumentCheckIcon } from '@heroicons/react/24/outline'
 import { useTranslation } from 'react-i18next'
 import LoadingAnim from '../loading-anim'
 import type { FeedbackFunc } from '../type'
@@ -150,7 +150,7 @@ const Answer: FC<IAnswerProps> = ({
     return (
       <div className={`${s.itemOperation} flex gap-2`}>
         <Tooltip selector={`copy-button-${randomString(16)}`} content={isCopied ? t('common.operation.copied') as string : t('common.operation.copy') as string}>
-          {OperationBtn({ innerContent: <IconWrapper>{isCopied ? <ClipboardDocumentCheckIcon className="w-4 h-4" /> : <ClipboardDocumentIcon className="w-4 h-4" />}</IconWrapper>, onClick: handleCopy })}
+          {OperationBtn({ innerContent: <IconWrapper>{isCopied ? <DocumentCheckIcon className="w-4 h-4" /> : <DocumentIcon className="w-4 h-4" />}</IconWrapper>, onClick: handleCopy })}
         </Tooltip>
         {userOperation()}
       </div>
