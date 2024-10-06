@@ -126,7 +126,26 @@ const Answer: FC<IAnswerProps> = ({
         if (selection) {
           selection.removeAllRanges();
           selection.addRange(range);
+    
+          // 创建一个临时的 div 元素
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = contentRef.current.innerHTML;
+          tempDiv.style.color = 'black'; // 设置文本颜色
+          tempDiv.style.backgroundColor = 'white'; // 设置背景颜色
+          document.body.appendChild(tempDiv);
+    
+          // 选择 tempDiv 的内容
+          const tempRange = document.createRange();
+          tempRange.selectNodeContents(tempDiv);
+          selection.removeAllRanges();
+          selection.addRange(tempRange);
+    
+          // 复制内容到剪贴板
           document.execCommand('copy');
+    
+          // 移除临时元素
+          document.body.removeChild(tempDiv);
+    
           selection.removeAllRanges();
           setIsCopied(true);
           setTimeout(() => setIsCopied(false), 2000); // 2秒后恢复原状态
