@@ -1,7 +1,7 @@
 'use client'
 import type { FC } from 'react'
-import React, { useRef } from 'react'
-import { HandThumbDownIcon, HandThumbUpIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline'
+import React, { useRef, useState } from 'react'
+import { HandThumbDownIcon, HandThumbUpIcon, ClipboardDocumentIcon, ClipboardDocumentCheckIcon } from '@heroicons/react/24/outline'
 import { useTranslation } from 'react-i18next'
 import LoadingAnim from '../loading-anim'
 import type { FeedbackFunc } from '../type'
@@ -77,6 +77,8 @@ const Answer: FC<IAnswerProps> = ({
 
   const contentRef = useRef<HTMLDivElement>(null);
 
+  const [isCopied, setIsCopied] = useState(false);
+
   /**
  * Render feedback results (distinguish between users and administrators)
  * User reviews cannot be cancelled in Console
@@ -126,6 +128,8 @@ const Answer: FC<IAnswerProps> = ({
           selection.addRange(range);
           document.execCommand('copy');
           selection.removeAllRanges();
+          setIsCopied(true);
+          setTimeout(() => setIsCopied(false), 2000); // 2秒后恢复原状态
         }
       }
     };
@@ -145,8 +149,8 @@ const Answer: FC<IAnswerProps> = ({
   
     return (
       <div className={`${s.itemOperation} flex gap-2`}>
-        <Tooltip selector={`copy-button-${randomString(16)}`} content={t('common.operation.copy') as string}>
-          {OperationBtn({ innerContent: <IconWrapper><ClipboardDocumentIcon className="w-4 h-4" /></IconWrapper>, onClick: handleCopy })}
+        <Tooltip selector={`copy-button-${randomString(16)}`} content={isCopied ? t('common.operation.copied') as string : t('common.operation.copy') as string}>
+          {OperationBtn({ innerContent: <IconWrapper>{isCopied ? <ClipboardDocumentCheckIcon className="w-4 h-4" /> : <ClipboardDocumentIcon className="w-4 h-4" /></IconWrapper>, onClick: handleCopy })}
         </Tooltip>
         {userOperation()}
       </div>
@@ -196,7 +200,7 @@ const Answer: FC<IAnswerProps> = ({
         </div>
         <div className={`${s.answerWrap}`}>
           <div className={`${s.answer} relative text-sm text-gray-900`}>
-            <div
+          <div
               ref={contentRef}
               className={`ml-2 py-3 px-4 bg-gray-100 rounded-tr-2xl rounded-b-2xl ${workflowProcess && 'min-w-[480px]'}`}
             >
