@@ -126,33 +126,33 @@ const Answer: FC<IAnswerProps> = ({
         if (selection) {
           selection.removeAllRanges();
           selection.addRange(range);
-    
+
           // 创建一个临时的 div 元素
           const tempDiv = document.createElement('div');
           tempDiv.innerHTML = contentRef.current.innerHTML;
           tempDiv.style.color = 'black'; // 设置文本颜色
           tempDiv.style.backgroundColor = 'white'; // 设置背景颜色
           document.body.appendChild(tempDiv);
-    
+
           // 选择 tempDiv 的内容
           const tempRange = document.createRange();
           tempRange.selectNodeContents(tempDiv);
           selection.removeAllRanges();
           selection.addRange(tempRange);
-    
+
           // 复制内容到剪贴板
           document.execCommand('copy');
-    
+
           // 移除临时元素
           document.body.removeChild(tempDiv);
-    
+
           selection.removeAllRanges();
           setIsCopied(true);
           setTimeout(() => setIsCopied(false), 2000); // 2秒后恢复原状态
         }
       }
     };
-  
+
     const userOperation = () => {
       return feedback?.rating
         ? null
@@ -165,7 +165,7 @@ const Answer: FC<IAnswerProps> = ({
           </Tooltip>
         </div>
     };
-  
+
     return (
       <div className={`${s.itemOperation} flex gap-2`}>
         <Tooltip selector={`copy-button-${randomString(16)}`} content={isCopied ? t('common.operation.copied') as string : t('common.operation.copy') as string}>
@@ -219,13 +219,13 @@ const Answer: FC<IAnswerProps> = ({
         </div>
         <div className={`${s.answerWrap}`}>
           <div className={`${s.answer} relative text-sm text-gray-900`}>
-          <div
+            <div
               ref={contentRef}
               className={`ml-2 py-3 px-4 bg-gray-100 rounded-tr-2xl rounded-b-2xl ${workflowProcess && 'min-w-[480px]'}`}
             >
-              {/* {workflowProcess && (
-                <WorkflowProcess data={workflowProcess} hideInfo />
-              )} */}
+              {workflowProcess && (
+                <WorkflowProcess data={workflowProcess} hideInfo style={{ display: 'none' }} />
+              )}
               {(isResponding && (isAgentMode ? (!content && (agent_thoughts || []).filter(item => !!item.thought || !!item.tool).length === 0) : !content))
                 ? (
                   <div className='flex items-center justify-center w-6 h-5'>
