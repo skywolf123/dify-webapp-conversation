@@ -168,7 +168,8 @@ const Answer: FC<IAnswerProps> = ({
 
     return (
       <div className={`${s.itemOperation} flex gap-2`}>
-        <Tooltip selector={`copy-button-${randomString(16)}`} content={isCopied ? t('common.operation.copied') as string : t('common.operation.copy') as string}>
+        {/* <Tooltip selector={`copy-button-${randomString(16)}`} content={isCopied ? t('common.operation.copied') as string : t('common.operation.copy') as string}> */}
+        <Tooltip selector={`copy-button-${randomString(16)}`} content={'已复制'}>
           {OperationBtn({ innerContent: <IconWrapper>{isCopied ? <DocumentCheckIcon className="w-4 h-4" /> : <DocumentIcon className="w-4 h-4" />}</IconWrapper>, onClick: handleCopy })}
         </Tooltip>
         {userOperation()}
@@ -223,9 +224,9 @@ const Answer: FC<IAnswerProps> = ({
               ref={contentRef}
               className={`ml-2 py-3 px-4 bg-gray-100 rounded-tr-2xl rounded-b-2xl ${workflowProcess && 'min-w-[480px]'}`}
             >
-              {/* {workflowProcess && (
+              {workflowProcess && (
                 <WorkflowProcess data={workflowProcess} hideInfo />
-              )} */}
+              )}
               {(isResponding && (isAgentMode ? (!content && (agent_thoughts || []).filter(item => !!item.thought || !!item.tool).length === 0) : !content))
                 ? (
                   <div className='flex items-center justify-center w-6 h-5'>
