@@ -3,7 +3,7 @@ import Toast from '@/app/components/base/toast'
 import type { AnnotationReply, MessageEnd, MessageReplace, ThoughtItem } from '@/app/components/chat/type'
 import type { VisionFile } from '@/types/app'
 
-const TIME_OUT = 300000
+const TIME_OUT = 100000
 
 const ContentType = {
   json: 'application/json',
