@@ -18,31 +18,34 @@ export async function POST(request: NextRequest) {
   try {
     const response = await client.createChatMessage(inputs, query, user, stream, conversationId, files)
 
-    // 创建一个 TransformStream 来注入 keepalive 消息
-    const keepAliveStream = new TransformStream({
-      async transform(chunk, controller) {
-        controller.enqueue(chunk)
-      },
-      flush(controller) {
-        clearInterval(timer)
+    // 创建一个 ReadableStream
+    const readableStream = new ReadableStream({
+      async start(controller) {
+        let keepAliveInterval: NodeJS.Timeout;
+
+        // 设置 5 秒的 keepalive
+        keepAliveInterval = setInterval(() => {
+          controller.enqueue(new TextEncoder().encode(":\n\n"));
+        }, 5000);
+
+        response.data.on('data', (chunk) => {
+          controller.enqueue(chunk);
+        });
+
+        response.data.on('end', () => {
+          clearInterval(keepAliveInterval);
+          controller.close();
+        });
+
+        response.data.on('error', (err) => {
+          clearInterval(keepAliveInterval);
+          controller.error(err);
+        });
       }
-    })
-
-    // 设置一个定时器，每5秒发送一次 keepalive 消息
-    const timer = setInterval(() => {
-      const encoder = new TextEncoder()
-      const writer = keepAliveStream.writable.getWriter()
-      writer.write(encoder.encode('\n')).then(() => writer.releaseLock())
-    }, 5000)
-
-    // 使用 ReadableStream.from 创建可读流
-    const readableStream = ReadableStream.from(response.data)
-
-    // 将原始响应通过 keepAliveStream 传递
-    readableStream.pipeTo(keepAliveStream.writable)
+    });
 
     // 返回流式响应
-    return new Response(keepAliveStream.readable, {
+    return new Response(readableStream, {
       headers: {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
