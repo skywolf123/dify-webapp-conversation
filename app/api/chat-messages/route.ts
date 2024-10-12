@@ -31,20 +31,12 @@ export async function POST(request: NextRequest) {
     // 设置一个定时器，每5秒发送一次 keepalive 消息
     const timer = setInterval(() => {
       const encoder = new TextEncoder()
-      keepAliveStream.writable.getWriter().write(encoder.encode('\n'))
+      const writer = keepAliveStream.writable.getWriter()
+      writer.write(encoder.encode('\n')).then(() => writer.releaseLock())
     }, 5000)
 
-    // 创建一个 ReadableStream
-    const readableStream = new ReadableStream({
-      async start(controller) {
-        response.data.on('data', (chunk) => {
-          keepAliveStream.writable.getWriter().write(chunk)
-        })
-        response.data.on('end', () => {
-          keepAliveStream.writable.getWriter().close()
-        })
-      }
-    })
+    // 使用 ReadableStream.from 创建可读流
+    const readableStream = ReadableStream.from(response.data)
 
     // 将原始响应通过 keepAliveStream 传递
     readableStream.pipeTo(keepAliveStream.writable)
