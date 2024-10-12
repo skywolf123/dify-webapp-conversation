@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const response = await client.createChatMessage(inputs, query, user, stream, conversationId, files)
-    
+
     // 创建一个 ReadableStream
     const readableStream = new ReadableStream({
       async start(controller) {

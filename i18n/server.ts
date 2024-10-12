@@ -23,7 +23,18 @@ export const getLocaleOnServer = (): Locale => {
     languages = new Negotiator({ headers: negotiatorHeaders }).languages()
   }
 
-  // match locale
-  const matchedLocale = match(languages, locales, i18n.defaultLocale) as Locale
-  return matchedLocale
+  // 添加日志记录
+  console.log('Available locales:', locales)
+  console.log('Detected languages:', languages)
+
+  try {
+    // match locale
+    const matchedLocale = match(languages, locales, i18n.defaultLocale) as Locale
+    console.log('Matched locale:', matchedLocale)
+    return matchedLocale
+  } catch (error) {
+    console.error('Error matching locale:', error)
+    // 如果匹配失败，返回默认语言
+    return i18n.defaultLocale
+  }
 }
