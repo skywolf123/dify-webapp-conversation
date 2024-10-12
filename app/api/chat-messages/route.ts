@@ -21,28 +21,14 @@ export async function POST(request: NextRequest) {
     // 创建一个 ReadableStream
     const readableStream = new ReadableStream({
       async start(controller) {
-        let keepAliveInterval: NodeJS.Timeout;
-
-        // 设置 5 秒的 keepalive
-        keepAliveInterval = setInterval(() => {
-          controller.enqueue(new TextEncoder().encode(":\n\n"));
-        }, 5000);
-
         response.data.on('data', (chunk) => {
-          controller.enqueue(chunk);
-        });
-
+          controller.enqueue(chunk)
+        })
         response.data.on('end', () => {
-          clearInterval(keepAliveInterval);
-          controller.close();
-        });
-
-        response.data.on('error', (err) => {
-          clearInterval(keepAliveInterval);
-          controller.error(err);
-        });
+          controller.close()
+        })
       }
-    });
+    })
 
     // 返回流式响应
     return new Response(readableStream, {
