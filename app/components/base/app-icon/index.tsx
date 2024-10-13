@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react'
 import classNames from 'classnames'
 import style from './style.module.css'
-import { fetchMeta } from 'service/index'
+import { fetchMeta } from '@/service/index'
 
 export type AppIconProps = {
   size?: 'xs' | 'tiny' | 'small' | 'medium' | 'large'
