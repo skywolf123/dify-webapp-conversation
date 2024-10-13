@@ -24,8 +24,14 @@ const AppIcon: FC<AppIconProps> = ({
       try {
         const response = await fetchMeta()
         const toolIcons = response.data.tool_icons
-        const toolName = Object.keys(toolIcons)[0]
-        setIconData(toolIcons[toolName])
+
+        // 获取第一个图标
+        const firstToolName = Object.keys(toolIcons)[0]
+        if (firstToolName) {
+          setIconData(toolIcons[firstToolName])
+        } else {
+          console.error('No icon data found')
+        }
       } catch (error) {
         console.error('Error fetching meta data:', error)
       }
