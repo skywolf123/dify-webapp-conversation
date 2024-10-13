@@ -60,3 +60,8 @@ export const updateFeedback = async ({ url, body }: { url: string; body: Feedbac
 export const generationConversationName = async (id: string) => {
   return post(`conversations/${id}/name`, { body: { auto_generate: true } })
 }
+
+// 新增 meta 接口的获取函数
+export const fetchMeta = async () => {
+  return get('meta')
+}
