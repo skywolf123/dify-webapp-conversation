@@ -11,6 +11,25 @@ export type AppIconProps = {
   className?: string
 }
 
+const getIconContent = (): string => {
+  try {
+    const response = fetchMeta()
+    const toolIcons = response.data.tool_icons
+    const firstToolName = Object.keys(toolIcons)[0]
+    if (firstToolName) {
+      return toolIcons[firstToolName].content
+    } else {
+      console.error('No icon data found')
+      return '🤖'
+    }
+  } catch (error) {
+    console.error('Error fetching meta data:', error)
+    return '🤖'
+  }
+}
+
+const iconContent = getIconContent()
+
 const AppIcon: FC<AppIconProps> = ({
   size = 'medium',
   rounded = false,
@@ -29,26 +48,9 @@ const AppIcon: FC<AppIconProps> = ({
         background,
       }}
     >
-      {getIconContent()}
+      {iconContent}
     </span>
   )
 }
 
 export default AppIcon
-
-const getIconContent = async () => {
-  try {
-    const response = await fetchMeta()
-    const toolIcons = response.data.tool_icons
-    const firstToolName = Object.keys(toolIcons)[0]
-    if (firstToolName) {
-      return toolIcons[firstToolName].content
-    } else {
-      console.error('No icon data found')
-      return '🤖'
-    }
-  } catch (error) {
-    console.error('Error fetching meta data:', error)
-    return '🤖'
-  }
-}
