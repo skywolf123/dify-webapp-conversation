@@ -14,12 +14,13 @@ export type AppIconProps = {
 const getIconContent = async (): Promise<string> => {
   try {
     const response = await fetchMeta()
-    const { tool_icons } = response
-    if (tool_icons && Object.keys(tool_icons).length > 0) {
-      const firstToolName = Object.keys(tool_icons)[0]
-      return tool_icons[firstToolName].content
+    console.log('fetchMeta response:', response) // 添加日志
+
+    if (response && response.tool_icons && Object.keys(response.tool_icons).length > 0) {
+      const firstToolName = Object.keys(response.tool_icons)[0]
+      return response.tool_icons[firstToolName].content
     } else {
-      console.error('没有找到图标数据')
+      console.error('没有找到图标数据', response)
       return '🤖'
     }
   } catch (error) {
