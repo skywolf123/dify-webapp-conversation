@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useEffect, useState } from 'react'
 import classNames from 'classnames'
 import style from './style.module.css'
 import { fetchMeta } from '@/service/index'
@@ -11,24 +11,22 @@ export type AppIconProps = {
   className?: string
 }
 
-const getIconContent = (): string => {
+const getIconContent = async (): Promise<string> => {
   try {
-    const response = fetchMeta()
-    const toolIcons = response.data.tool_icons
-    const firstToolName = Object.keys(toolIcons)[0]
-    if (firstToolName) {
-      return toolIcons[firstToolName].content
+    const response = await fetchMeta()
+    const { tool_icons } = response
+    if (tool_icons && Object.keys(tool_icons).length > 0) {
+      const firstToolName = Object.keys(tool_icons)[0]
+      return tool_icons[firstToolName].content
     } else {
-      console.error('No icon data found')
+      console.error('没有找到图标数据')
       return '🤖'
     }
   } catch (error) {
-    console.error('Error fetching meta data:', error)
+    console.error('获取元数据时出错:', error)
     return '🤖'
   }
 }
-
-const iconContent = getIconContent()
 
 const AppIcon: FC<AppIconProps> = ({
   size = 'medium',
@@ -36,6 +34,12 @@ const AppIcon: FC<AppIconProps> = ({
   background,
   className,
 }) => {
+  const [iconContent, setIconContent] = useState<string>('🤖')
+
+  useEffect(() => {
+    getIconContent().then(setIconContent)
+  }, [])
+
   return (
     <span
       className={classNames(
