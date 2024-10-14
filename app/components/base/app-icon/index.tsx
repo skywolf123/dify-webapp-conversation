@@ -6,17 +6,16 @@ import { fetchMeta } from '@/service/index'
 export type AppIconProps = {
   size?: 'xs' | 'tiny' | 'small' | 'medium' | 'large'
   rounded?: boolean
-  className?: string
+  icon?: string
   background?: string
-  iconContent?: string // 传递获取的图标作为属性
+  className?: string
 }
 
 const AppIcon: FC<AppIconProps> = ({
   size = 'medium',
   rounded = false,
-  className,
   background,
-  iconContent,
+  className,
 }) => {
   return (
     <span
@@ -30,20 +29,19 @@ const AppIcon: FC<AppIconProps> = ({
         background,
       }}
     >
-      {iconContent}
+      {getIconContent()}
     </span>
   )
 }
 
 export default AppIcon
 
-export const getIconContent = async () => {
+const getIconContent = async () => {
   try {
     const response = await fetchMeta()
     const toolIcons = response.data.tool_icons
     const firstToolName = Object.keys(toolIcons)[0]
     if (firstToolName) {
-      console.info(toolIcons[firstToolName].content)
       return toolIcons[firstToolName].content
     } else {
       console.error('No icon data found')
