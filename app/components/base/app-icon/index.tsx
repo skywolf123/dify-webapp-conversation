@@ -14,15 +14,18 @@ export type AppIconProps = {
 const getIconContent = async (): Promise<string> => {
   try {
     const response = await fetchMeta()
-    console.log('fetchMeta response:', response) // 添加日志
+    console.log('fetchMeta response:', response) // 保留日志
 
-    if (response && response.tool_icons && Object.keys(response.tool_icons).length > 0) {
-      const firstToolName = Object.keys(response.tool_icons)[0]
-      return response.tool_icons[firstToolName].content
-    } else {
-      console.error('没有找到图标数据', response)
-      return '🤖'
+    if (Array.isArray(response) && response.length > 0) {
+      // 假设第一个元素包含 tool_icons
+      const firstItem = response[0]
+      if (firstItem && firstItem.tool_icons && Object.keys(firstItem.tool_icons).length > 0) {
+        const firstToolName = Object.keys(firstItem.tool_icons)[0]
+        return firstItem.tool_icons[firstToolName].content
+      }
     }
+    console.error('没有找到有效的图标数据', response)
+    return '🤖'
   } catch (error) {
     console.error('获取元数据时出错:', error)
     return '🤖'
