@@ -5,13 +5,12 @@ import { client, getInfo, setSession } from '@/app/api/utils/common'
 export async function GET(request: NextRequest) {
   const { sessionId, user } = getInfo(request)
   try {
-    // 只使用 user 参数调用 getMeta 方法
-    const { data }: any = await client.getMeta(user)
-    return NextResponse.json(data, {
+    const { data } = await client.getMeta(user)
+    return NextResponse.json(data as object, {
       headers: setSession(sessionId),
     })
-  } catch (error) {
-    console.error('Error fetching meta data:', error)
-    return NextResponse.json({ error: 'Failed to fetch meta data' }, { status: 500 })
+  }
+  catch (error) {
+    return NextResponse.json([])
   }
 }
