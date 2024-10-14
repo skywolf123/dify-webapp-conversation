@@ -1,6 +1,7 @@
 import type { FC } from 'react'
 import classNames from 'classnames'
 import style from './style.module.css'
+import { APP_INFO } from '@/config'
 
 export type AppIconProps = {
   size?: 'xs' | 'tiny' | 'small' | 'medium' | 'large'
@@ -28,7 +29,7 @@ const AppIcon: FC<AppIconProps> = ({
         background,
       }}
     >
-      🤖
+      {APP_INFO.icon}
     </span>
   )
 }
