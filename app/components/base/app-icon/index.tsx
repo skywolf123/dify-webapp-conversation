@@ -43,6 +43,7 @@ export const getIconContent = async () => {
     const toolIcons = response.data.tool_icons
     const firstToolName = Object.keys(toolIcons)[0]
     if (firstToolName) {
+      console.info(toolIcons[firstToolName].content)
       return toolIcons[firstToolName].content
     } else {
       console.error('No icon data found')
