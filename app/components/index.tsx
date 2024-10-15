@@ -61,9 +61,14 @@ const Main: FC = () => {
 
   // 添加自动请求功能
   useEffect(() => {
+    console.log('自动请求功能已启动') // 新增日志
     const intervalId = setInterval(() => {
+      console.log('开始发送自动请求') // 新增日志
       fetch('/api/parameters')
-        .then(response => response.json())
+        .then(response => {
+          console.log('收到响应:', response.status) // 新增日志
+          return response.json()
+        })
         .then(data => {
           console.log('自动请求 /api/parameters 成功:', data)
         })
@@ -72,7 +77,10 @@ const Main: FC = () => {
         })
     }, 10000) // 每10秒执行一次
 
-    return () => clearInterval(intervalId) // 清理定时器
+    return () => {
+      console.log('清理自动请求定时器') // 新增日志
+      clearInterval(intervalId) // 清理定时器
+    }
   }, [])
 
   /*
