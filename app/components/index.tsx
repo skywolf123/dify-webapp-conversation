@@ -62,13 +62,13 @@ const Main: FC = () => {
   // 添加自动请求功能
   useEffect(() => {
     const intervalId = setInterval(() => {
-      fetch('/api/meta')
+      fetch('/api/parameters')
         .then(response => response.json())
         .then(data => {
-          console.log('自动请求 /api/meta 成功:', data)
+          console.log('自动请求 /api/parameters 成功:', data)
         })
         .catch(error => {
-          console.error('自动请求 /api/meta 失败:', error)
+          console.error('自动请求 /api/parameters 失败:', error)
         })
     }, 10000) // 每10秒执行一次
 
