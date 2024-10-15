@@ -62,7 +62,7 @@ const Main: FC = () => {
   // 添加自动请求功能
   useEffect(() => {
     const intervalId = setInterval(() => {
-      fetch('/api/parameters')
+      fetch('/api/meta')
         .then(response => {
           return response.json()
         })
