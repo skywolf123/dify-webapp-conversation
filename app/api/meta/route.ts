@@ -6,6 +6,6 @@ export async function GET(request: NextRequest) {
   const { sessionId, user } = getInfo(request)
   console.log('Meta route - User:', user)
   return NextResponse.json([]);
-
+}
 // 测试 client
 // testClient()
