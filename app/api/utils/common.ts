@@ -24,4 +24,5 @@ export const client: ChatClient = new ChatClient(API_KEY, API_URL || undefined)
 export const testClient = () => {
   console.log('Client methods:', Object.keys(client))
   console.log('getMeta exists:', typeof client.getMeta === 'function')
+  console.log('getParamates exists:', typeof client.getParamates === 'function')
 }
