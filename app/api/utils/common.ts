@@ -18,4 +18,10 @@ export const setSession = (sessionId: string) => {
   return { 'Set-Cookie': `session_id=${sessionId}` }
 }
 
-export const client = new ChatClient(API_KEY, API_URL || undefined)
+export const client: ChatClient = new ChatClient(API_KEY, API_URL || undefined)
+
+// 添加一个测试函数来检查 client 的方法
+export const testClient = () => {
+  console.log('Client methods:', Object.keys(client))
+  console.log('getMeta exists:', typeof client.getMeta === 'function')
+}
