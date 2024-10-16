@@ -172,7 +172,7 @@ const Answer: FC<IAnswerProps> = ({
         <Tooltip selector={`copy-button-${randomString(16)}`} content={'复制'}>
           {OperationBtn({ innerContent: <IconWrapper>{isCopied ? <DocumentCheckIcon className="w-4 h-4" /> : <DocumentIcon className="w-4 h-4" />}</IconWrapper>, onClick: handleCopy })}
         </Tooltip>
-        {userOperation()}
+        {/* {userOperation()} */}
       </div>
     );
   };
