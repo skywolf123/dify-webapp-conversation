@@ -248,18 +248,18 @@ const Answer: FC<IAnswerProps> = ({
                     <>
                       <Markdown content={content} />
                       {extractButtons.length > 0 && (
-                        <div className="mt-3 flex flex-wrap gap-2">
+                        <div className="mt-3 flex flex-wrap">
                           {extractButtons.map((buttonText, index) => (
-                            <button
+                            <div
                               key={index}
-                              className="px-3 py-1 text-sm text-blue-600 bg-blue-100 rounded-full hover:bg-blue-200 transition-colors"
+                              className="mt-1 mr-1 max-w-full last:mr-0 shrink-0 py-[5px] leading-[18px] items-center px-4 rounded-lg border border-gray-200 shadow-xs bg-white text-xs font-medium text-primary-600 cursor-pointer"
                               onClick={() => {
                                 // 调用 onButtonClick 函数，传入按钮文本作为 question
                                 onButtonClick?.(buttonText);
                               }}
                             >
                               {buttonText}
-                            </button>
+                            </div>
                           ))}
                         </div>
                       )}
