@@ -29,10 +29,10 @@ export async function POST(request: NextRequest) {
           controller.close()
         })
 
-        // 新增的每隔5秒一次的流
+        // 新增的每隔3秒一次的流
         const intervalId = setInterval(() => {
           controller.enqueue(`每隔5秒的心跳包: ${new Date().toISOString()}`)
-        }, 5000)
+        }, 3000)
 
         // 在流式响应结束时清除定时器
         response.data.on('end', () => {
