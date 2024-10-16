@@ -1,6 +1,6 @@
 'use client'
 import type { FC } from 'react'
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useMemo } from 'react'
 import { HandThumbDownIcon, HandThumbUpIcon, DocumentIcon, DocumentCheckIcon } from '@heroicons/react/24/outline'
 import { useTranslation } from 'react-i18next'
 import LoadingAnim from '../loading-anim'
@@ -60,6 +60,7 @@ type IAnswerProps = {
   onFeedback?: FeedbackFunc
   isResponding?: boolean
   allToolIcons?: Record<string, string | Emoji>
+  onButtonClick?: (question: string) => void // 新增的 prop
 }
 
 // The component needs to maintain its own state to control whether to display input component
@@ -69,6 +70,7 @@ const Answer: FC<IAnswerProps> = ({
   onFeedback,
   isResponding,
   allToolIcons,
+  onButtonClick, // 新增的 prop
 }) => {
   const { id, content, feedback, agent_thoughts, workflowProcess } = item
   const isAgentMode = !!agent_thoughts && agent_thoughts.length > 0
@@ -78,6 +80,13 @@ const Answer: FC<IAnswerProps> = ({
   const contentRef = useRef<HTMLDivElement>(null);
 
   const [isCopied, setIsCopied] = useState(false);
+
+  // 提取「」中的内容
+  const extractButtons = useMemo(() => {
+    if (!content) return [];
+    const matches = content.match(/「([^」]+)」/g);
+    return matches ? matches.map(match => match.slice(1, -1)) : [];
+  }, [content]);
 
   /**
  * Render feedback results (distinguish between users and administrators)
@@ -236,7 +245,25 @@ const Answer: FC<IAnswerProps> = ({
                 : (isAgentMode
                   ? agentModeAnswer
                   : (
-                    <Markdown content={content} />
+                    <>
+                      <Markdown content={content} />
+                      {extractButtons.length > 0 && (
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {extractButtons.map((buttonText, index) => (
+                            <button
+                              key={index}
+                              className="px-3 py-1 text-sm text-blue-600 bg-blue-100 rounded-full hover:bg-blue-200 transition-colors"
+                              onClick={() => {
+                                // 调用 onButtonClick 函数，传入按钮文本作为 question
+                                onButtonClick?.(buttonText);
+                              }}
+                            >
+                              {buttonText}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </>
                   ))}
             </div>
             <div className='absolute top-[-14px] right-[-14px] flex flex-row justify-end gap-1'>

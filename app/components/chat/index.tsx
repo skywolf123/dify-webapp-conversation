@@ -117,6 +117,12 @@ const Chat: FC<IChatProps> = ({
     }
   }
 
+  // 处理按钮点击事件
+  const handleButtonClick = (buttonText: string) => {
+    // 调用 onSend 函数，传入按钮文本
+    onSend(buttonText, []);
+  }
+
   return (
     <div className={cn(!feedbackDisabled && 'px-3.5', 'h-full')}>
       {/* Chat List */}
@@ -130,6 +136,7 @@ const Chat: FC<IChatProps> = ({
               feedbackDisabled={feedbackDisabled}
               onFeedback={onFeedback}
               isResponding={isResponding && isLast}
+              onButtonClick={handleButtonClick} // 将 handleButtonClick 传递给 Answer 组件
             />
           }
           return (
