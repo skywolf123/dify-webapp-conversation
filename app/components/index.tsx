@@ -72,7 +72,7 @@ const Main: FC = () => {
         .catch(error => {
           console.error('自动请求 /api/parameters 失败:', error)
         })
-    }, 3000) // 每3秒执行一次
+    }, 20000) // 每20秒执行一次
 
     return () => {
       clearInterval(intervalId) // 清理定时器
