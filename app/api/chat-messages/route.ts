@@ -21,29 +21,11 @@ export async function POST(request: NextRequest) {
     // 创建一个 ReadableStream
     const readableStream = new ReadableStream({
       async start(controller) {
-        // 原有的流
         response.data.on('data', (chunk) => {
           controller.enqueue(chunk)
         })
         response.data.on('end', () => {
           controller.close()
-        })
-
-        // 新增的每隔3秒一次的流
-        const intervalId = setInterval(() => {
-          controller.enqueue(`每隔5秒的心跳包: ${new Date().toISOString()}\n`)
-        }, 1000)
-
-        // 在流式响应结束时清除定时器
-        response.data.on('end', () => {
-          clearInterval(intervalId)
-          controller.close()
-        })
-
-        // 在流式响应发生错误时清除定时器
-        response.data.on('error', () => {
-          clearInterval(intervalId)
-          controller.error('流式响应发生错误')
         })
       }
     })
