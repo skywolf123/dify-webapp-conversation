@@ -15,6 +15,34 @@ export async function POST(request: NextRequest) {
   // 设置流式响应
   const stream = true
 
+  // 添加自动请求 meta 的定时器
+  let intervalId: NodeJS.Timeout | null = null;
+
+  const startAutoRequest = () => {
+    if (intervalId) {
+      clearInterval(intervalId);
+    }
+
+    intervalId = setInterval(() => {
+      fetch('/api/meta')
+        .then(response => response.json())
+        .then(data => {
+          console.log('自动请求 /api/meta 成功:', data);
+        })
+        .catch(error => {
+          console.error('自动请求 /api/meta 失败:', error);
+        });
+    }, 20000); // 每 20 秒执行一次
+  };
+
+  const stopAutoRequest = () => {
+    if (intervalId) {
+      clearInterval(intervalId);
+    }
+  };
+
+  startAutoRequest();
+
   try {
     const response = await client.createChatMessage(inputs, query, user, stream, conversationId, files)
 
@@ -26,6 +54,7 @@ export async function POST(request: NextRequest) {
         })
         response.data.on('end', () => {
           controller.close()
+          stopAutoRequest() // 停止自动请求
         })
       }
     })
@@ -40,6 +69,7 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('Error in chat message creation:', error)
+    stopAutoRequest() // 停止自动请求
     return new Response(JSON.stringify({ error: 'An error occurred while processing your request' }), {
       status: 500,
       headers: {
