@@ -48,7 +48,7 @@ const Main: FC = () => {
   useEffect(() => {
     if (APP_INFO?.title)
       document.title = `${APP_INFO.title}`
-      // document.title = `${APP_INFO.title} - Powered by Dify`
+    // document.title = `${APP_INFO.title} - Powered by Dify`
   }, [APP_INFO?.title])
 
   // onData change thought (the produce obj). https://github.com/immerjs/immer/issues/576
@@ -56,26 +56,6 @@ const Main: FC = () => {
     setAutoFreeze(false)
     return () => {
       setAutoFreeze(true)
-    }
-  }, [])
-
-  // 添加自动请求功能
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      fetch('/api/meta')
-        .then(response => {
-          return response.json()
-        })
-        .then(data => {
-          console.log('自动请求 /api/parameters 成功:', data)
-        })
-        .catch(error => {
-          console.error('自动请求 /api/parameters 失败:', error)
-        })
-    }, 20000) // 每20秒执行一次
-
-    return () => {
-      clearInterval(intervalId) // 清理定时器
     }
   }, [])
 
@@ -396,6 +376,32 @@ const Main: FC = () => {
     let tempNewConversationId = ''
 
     setRespondingTrue()
+
+    // 添加自动请求 meta 的定时器
+    let intervalId: NodeJS.Timeout | null = null;
+
+    const startAutoRequest = () => {
+      intervalId = setInterval(() => {
+        fetch('/api/meta')
+          .then(response => response.json())
+          .then(data => {
+            console.log('自动请求 /api/meta 成功:', data);
+          })
+          .catch(error => {
+            console.error('自动请求 /api/meta 失败:', error);
+          });
+      }, 20000); // 每 20 秒执行一次
+    };
+
+    const stopAutoRequest = () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+    };
+
+    startAutoRequest();
+
     sendChatMessage(data, {
       getAbortController: (abortController) => {
         setAbortController(abortController)
@@ -448,6 +454,7 @@ const Main: FC = () => {
         setChatNotStarted()
         setCurrConversationId(tempNewConversationId, APP_ID, true)
         setRespondingFalse()
+        stopAutoRequest() // 停止自动请求
       },
       onFile(file) {
         const lastThought = responseItem.agent_thoughts?.[responseItem.agent_thoughts?.length - 1]
@@ -542,6 +549,7 @@ const Main: FC = () => {
       },
       onError() {
         setRespondingFalse()
+        stopAutoRequest() // 停止自动请求
         // role back placeholder answer
         setChatList(produce(getChatList(), (draft) => {
           draft.splice(draft.findIndex(item => item.id === placeholderAnswerId), 1)
