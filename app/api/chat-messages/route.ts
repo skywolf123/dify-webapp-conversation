@@ -62,6 +62,15 @@ export async function POST(request: NextRequest) {
             if (data.event.startsWith('node') && data.data && data.data.node_type === 'code') {
               // 如果是code类型的node事件，我们不将其添加到流中
               console.log('已过滤掉code节点:', data.data.id);
+            } else if (data.event === 'node_finished' && data.data && data.data.node_type === 'tool' && data.data.title === '获取新闻列表') {
+              // 处理获取新闻列表的事件
+              const newsText = JSON.parse(data.data.outputs.text);
+              const newsList = newsText.split('\\n');
+              const newsEvent = {
+                type: 'news_list',
+                data: newsList
+              };
+              controller.enqueue(JSON.stringify(newsEvent) + '\n\n');
             } else {
               // 对于其他类型的事件，我们将其添加到流中
               controller.enqueue(chunk);

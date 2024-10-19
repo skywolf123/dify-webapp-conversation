@@ -22,6 +22,8 @@ import AppUnavailable from '@/app/components/app-unavailable'
 import { API_KEY, APP_ID, APP_INFO, isShowPrompt, promptTemplate } from '@/config'
 import type { Annotation as AnnotationType } from '@/types/log'
 import { addFileInfos, sortAgentSorts } from '@/utils/tools'
+import NewsList from '@/app/components/news-list'
+
 
 const Main: FC = () => {
   const { t } = useTranslation()
@@ -44,6 +46,9 @@ const Main: FC = () => {
     detail: Resolution.low,
     transfer_methods: [TransferMethod.local_file],
   })
+
+  const [eventSource, setEventSource] = useState<EventSource | null>(null)
+
 
   useEffect(() => {
     if (APP_INFO?.title)
@@ -176,6 +181,13 @@ const Main: FC = () => {
     if (chatListDomRef.current)
       chatListDomRef.current.scrollTop = chatListDomRef.current.scrollHeight
   }, [chatList, currConversationId])
+  useEffect(() => {
+    return () => {
+      if (eventSource) {
+        eventSource.close();
+      }
+    }
+  }, [eventSource]);
   // user can not edit inputs if user had send message
   const canEditInputs = !chatList.some(item => item.isAnswer === false) && isNewConversation
   const createNewChat = () => {
@@ -323,6 +335,8 @@ const Main: FC = () => {
       notify({ type: 'info', message: t('app.errorMessage.waitForResponse') })
       return
     }
+    const source = new EventSource(`/api/chat-messages?conversation_id=${conversationId}`);
+    setEventSource(source);
     const data: Record<string, any> = {
       inputs: currInputs,
       query: message,
@@ -686,6 +700,7 @@ const Main: FC = () => {
                     visionConfig={visionConfig}
                   />
                 </div>
+                <NewsList eventSource={eventSource} />
               </div>)
           }
         </div>
