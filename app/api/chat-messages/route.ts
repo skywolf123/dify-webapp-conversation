@@ -49,33 +49,52 @@ export async function POST(request: NextRequest) {
     // 创建一个 ReadableStream
     const readableStream = new ReadableStream({
       async start(controller) {
+        let buffer = '';
         response.data.on('data', (chunk) => {
           try {
-            // 假设chunk是一个字符串，我们需要解析它
-            const dataString = chunk.toString('utf-8');
-            // 移除 "data: " 前缀
-            const jsonString = dataString.replace(/^data: /, '');
-            // 解析JSON
-            const data = JSON.parse(jsonString);
-
-            // 检查是否是以node开头的事件，以及node_type是否为code
-            if (data.event.startsWith('node') && data.data && data.data.node_type === 'code') {
-              // 如果是code类型的node事件，我们不将其添加到流中
-              console.log('已过滤掉 code 节点:', data.data.title);
-            } else if (data.event === 'node_finished') {
-              // 过滤掉 node_finished 事件
-              console.log('已过滤掉 node_finished 节点:', data.data.title);
-            } else {
-              // 对于其他类型的事件，我们将其添加到流中
-              controller.enqueue(chunk);
+            // 将新的chunk添加到buffer中
+            buffer += chunk.toString('utf-8');
+            
+            // 尝试处理buffer中的所有完整JSON对象
+            while (true) {
+              const match = buffer.match(/^data: ({.*})\n\n/);
+              if (!match) break;
+              
+              const jsonString = match[1];
+              buffer = buffer.slice(match[0].length);
+              
+              try {
+                const data = JSON.parse(jsonString);
+                
+                // 检查是否是以node开头的事件，以及node_type是否为code
+                if (data.event.startsWith('node') && data.data && data.data.node_type === 'code') {
+                  // 如果是code类型的node事件，我们不将其添加到流中
+                  console.log('已过滤掉 code 节点:', data.data.title);
+                } else if (data.event === 'node_finished') {
+                  // 过滤掉 node_finished 事件
+                  console.log('已过滤掉 node_finished 节点:', data.data.title);
+                } else {
+                  // 对于其他类型的事件，我们将其添加到流中
+                  controller.enqueue('data: ' + jsonString + '\n\n');
+                }
+              } catch (jsonError) {
+                console.error('JSON解析错误:', jsonError);
+                // 如果JSON解析失败，我们将原始数据添加到流中
+                controller.enqueue('data: ' + jsonString + '\n\n');
+              }
             }
           } catch (error) {
             console.error('处理数据块时出错:', error);
-            // 如果解析失败，我们仍然将原始chunk添加到流中
+            // 如果处理失败，我们将原始chunk添加到流中
             controller.enqueue(chunk);
           }
         });
         response.data.on('end', () => {
+          // 处理剩余的buffer
+          if (buffer.length > 0) {
+            console.warn('流结束时存在未处理的数据:', buffer);
+            controller.enqueue(buffer);
+          }
           controller.close()
           stopAutoRequest() // 停止自动请求
         })
