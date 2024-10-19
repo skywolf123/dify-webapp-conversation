@@ -58,9 +58,9 @@ export async function POST(request: NextRequest) {
             // 解析JSON
             const data = JSON.parse(jsonString);
 
-            // 检查是否是node_started事件，以及node_type是否为code
-            if (data.event === 'node_started' && data.data && data.data.node_type === 'code') {
-              // 如果是code类型的node_started事件，我们不将其添加到流中
+            // 检查是否是以node开头的事件，以及node_type是否为code
+            if (data.event.startsWith('node') && data.data && data.data.node_type === 'code') {
+              // 如果是code类型的node事件，我们不将其添加到流中
               console.log('已过滤掉code节点:', data.data.id);
             } else {
               // 对于其他类型的事件，我们将其添加到流中
