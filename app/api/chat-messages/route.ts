@@ -50,8 +50,28 @@ export async function POST(request: NextRequest) {
     const readableStream = new ReadableStream({
       async start(controller) {
         response.data.on('data', (chunk) => {
-          controller.enqueue(chunk)
-        })
+          try {
+            // 假设chunk是一个字符串，我们需要解析它
+            const dataString = chunk.toString('utf-8');
+            // 移除 "data: " 前缀
+            const jsonString = dataString.replace(/^data: /, '');
+            // 解析JSON
+            const data = JSON.parse(jsonString);
+
+            // 检查是否是node_started事件，以及node_type是否为code
+            if (data.event === 'node_started' && data.data && data.data.node_type === 'code') {
+              // 如果是code类型的node_started事件，我们不将其添加到流中
+              console.log('已过滤掉code节点:', data.data.id);
+            } else {
+              // 对于其他类型的事件，我们将其添加到流中
+              controller.enqueue(chunk);
+            }
+          } catch (error) {
+            console.error('处理数据块时出错:', error);
+            // 如果解析失败，我们仍然将原始chunk添加到流中
+            controller.enqueue(chunk);
+          }
+        });
         response.data.on('end', () => {
           controller.close()
           stopAutoRequest() // 停止自动请求
@@ -68,9 +88,9 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Error in chat message creation:', error)
+    console.error('创建聊天消息时出错:', error)
     stopAutoRequest() // 停止自动请求
-    return new Response(JSON.stringify({ error: 'An error occurred while processing your request' }), {
+    return new Response(JSON.stringify({ error: '处理您的请求时发生错误' }), {
       status: 500,
       headers: {
         'Content-Type': 'application/json',
