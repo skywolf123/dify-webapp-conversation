@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
   const stopAutoRequest = () => {
     if (intervalId) {
       clearInterval(intervalId);
+      intervalId = null;
     }
   };
 
@@ -54,11 +55,25 @@ export async function POST(request: NextRequest) {
         const processBuffer = (forceProcess = false) => {
           while (true) {
             const match = buffer.match(/^data: ({.*})\n\n/);
+            let jsonString = '';
+            let eventString = '';
+
+            // 检查是否有事件格式的数据
+            if (!match) {
+              eventString = buffer.match(/^event: (.*)\n\n/)?.[1];
+
+              if (eventString) {
+                buffer = buffer.replace(/^event: .*\n\n/, '');
+                controller.enqueue('event: ' + eventString + '\n\n');
+                continue;
+              }
+            }
+
             if (!match && !forceProcess) break;
-            
-            let jsonString = match ? match[1] : buffer;
+
+            jsonString = match ? match[1] : buffer;
             buffer = match ? buffer.slice(match[0].length) : '';
-            
+
             try {
               const data = JSON.parse(jsonString);
               
@@ -106,13 +121,14 @@ export async function POST(request: NextRequest) {
         });
 
         response.data.on('end', () => {
-          // 处理剩余的 buffer
+          if (intervalId) {
+            stopAutoRequest(); // 停止自动请求但确保不会在流结束时妨碍请求
+          }
+          
           if (buffer.length > 0) {
-            console.warn('流结束时存在未处理的数据，尝试处理:', buffer);
             processBuffer(true);
           }
           controller.close()
-          stopAutoRequest() // 停止自动请求
         })
       }
     })
