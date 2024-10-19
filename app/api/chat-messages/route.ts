@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
 
     intervalId = setInterval(() => {
       fetch('/api/meta')
-        .then(response => response.json())
+        .then(response => response.text())
         .then(data => {
           console.log('自动请求 /api/meta 成功:', data);
         })
