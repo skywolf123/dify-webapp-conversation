@@ -54,56 +54,39 @@ export async function POST(request: NextRequest) {
 
         const processBuffer = (forceProcess = false) => {
           while (true) {
-            const match = buffer.match(/^data: ({.*})\n\n/);
-            let jsonString = '';
-            let eventString = '';
+            const eventMatch = buffer.match(/^event: (.+)\n\n/);
+            const dataMatch = buffer.match(/^data: ({.*})\n\n/);
 
-            // 检查是否有事件格式的数据
-            if (!match) {
-              eventString = buffer.match(/^event: (.*)\n\n/)?.[1];
+            if (!eventMatch && !dataMatch && !forceProcess) break;
 
-              if (eventString) {
-                buffer = buffer.replace(/^event: .*\n\n/, '');
-                controller.enqueue('event: ' + eventString + '\n\n');
-                continue;
-              }
+            if (eventMatch) {
+              const eventData = eventMatch[1];
+              buffer = buffer.slice(eventMatch[0].length);
+              controller.enqueue(`event: ${eventData}\n\n`);
+              continue;
             }
 
-            if (!match && !forceProcess) break;
+            if (dataMatch) {
+              const jsonString = dataMatch[1];
+              buffer = buffer.slice(dataMatch[0].length);
 
-            jsonString = match ? match[1] : buffer;
-            buffer = match ? buffer.slice(match[0].length) : '';
-
-            try {
-              const data = JSON.parse(jsonString);
-              
-              if (data.event.startsWith('node') && data.data && data.data.node_type === 'code') {
-                console.log('已过滤掉 code 节点:', data.data.title);
-              } else if (data.event === 'node_finished') {
-                console.log('已过滤掉 node_finished 节点:', data.data.title);
-              } else {
-                controller.enqueue('data: ' + JSON.stringify(data) + '\n\n');
+              try {
+                const data = JSON.parse(jsonString);
+                
+                if (data.event.startsWith('node') && data.data && data.data.node_type === 'code') {
+                  console.log('已过滤掉 code 节点:', data.data.title);
+                } else if (data.event === 'node_finished') {
+                  console.log('已过滤掉 node_finished 节点:', data.data.title);
+                } else {
+                  controller.enqueue(`data: ${JSON.stringify(data)}\n\n`);
+                }
+              } catch (jsonError) {
+                console.error('JSON解析错误:', jsonError);
+                controller.enqueue(`data: ${jsonString}\n\n`);
               }
-            } catch (jsonError) {
-              console.error('JSON解析错误:', jsonError);
-              if (forceProcess) {
-                // 如果是强制处理模式，我们将未能解析的数据分割并尝试逐个解析
-                const parts = jsonString.split('\n\n');
-                parts.forEach(part => {
-                  if (part.trim()) {
-                    try {
-                      const partData = JSON.parse(part);
-                      controller.enqueue('data: ' + JSON.stringify(partData) + '\n\n');
-                    } catch {
-                      controller.enqueue('data: ' + part + '\n\n');
-                    }
-                  }
-                });
-              } else {
-                // 如果不是强制处理模式，我们将原始数据添加回 buffer
-                buffer = 'data: ' + jsonString + '\n\n' + buffer;
-                break;
-              }
+            } else if (forceProcess && buffer.trim()) {
+              controller.enqueue(`data: ${buffer.trim()}\n\n`);
+              buffer = '';
             }
 
             if (forceProcess && buffer.length === 0) break;
@@ -111,13 +94,8 @@ export async function POST(request: NextRequest) {
         };
 
         response.data.on('data', (chunk) => {
-          try {
-            buffer += chunk.toString('utf-8');
-            processBuffer();
-          } catch (error) {
-            console.error('处理数据块时出错:', error);
-            controller.enqueue(chunk);
-          }
+          buffer += chunk.toString('utf-8');
+          processBuffer();
         });
 
         response.data.on('end', () => {
