@@ -27,10 +27,10 @@ export async function POST(request: NextRequest) {
       fetch('/api/meta')
         .then(response => response.json())
         .then(data => {
-          console.log('自动请求 /api/meta 成功:', data);
+          console.log('服务端自动请求 /api/meta 成功:', data);
         })
         .catch(error => {
-          console.error('自动请求 /api/meta 失败:', error);
+          console.error('服务端自动请求 /api/meta 失败:', error);
         });
     }, 20000); // 每 20 秒执行一次
   };
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
 
               try {
                 const data = JSON.parse(jsonString);
-                
+
                 if (data.event.startsWith('node') && data.data && data.data.node_type === 'code') {
                   console.log('已过滤掉 code 节点:', data.data.title);
                 } else if (data.event === 'node_finished') {
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
           if (intervalId) {
             stopAutoRequest(); // 停止自动请求但确保不会在流结束时妨碍请求
           }
-          
+
           if (buffer.length > 0) {
             processBuffer(true);
           }

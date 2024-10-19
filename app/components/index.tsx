@@ -385,10 +385,10 @@ const Main: FC = () => {
         fetch('/api/meta')
           .then(response => response.json())
           .then(data => {
-            console.log('自动请求 /api/meta 成功:', data);
+            console.log('客户端自动请求 /api/meta 成功:', data);
           })
           .catch(error => {
-            console.error('自动请求 /api/meta 失败:', error);
+            console.error('客户端自动请求 /api/meta 失败:', error);
           });
       }, 20000); // 每 20 秒执行一次
     };
