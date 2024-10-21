@@ -1,122 +1,65 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
-'use client'
-import type { FC } from 'react'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import produce, { setAutoFreeze } from 'immer'
 import { useBoolean, useGetState } from 'ahooks'
-import useConversation from '@/hooks/use-conversation'
-import Toast from '@/app/components/base/toast'
-import Sidebar from '@/app/components/sidebar'
-import ConfigSence from '@/app/components/config-scence'
-import Header from '@/app/components/header'
-import { fetchAppParams, fetchChatList, fetchConversations, generationConversationName, sendChatMessage, updateFeedback } from '@/service'
-import type { ChatItem, ConversationItem, Feedbacktype, PromptConfig, VisionFile, VisionSettings } from '@/types/app'
-import { Resolution, TransferMethod, WorkflowRunningStatus } from '@/types/app'
-import Chat from '@/app/components/chat'
-import { setLocaleOnClient } from '@/i18n/client'
-import useBreakpoints, { MediaType } from '@/hooks/use-breakpoints'
-import Loading from '@/app/components/base/loading'
-import { replaceVarWithValues, userInputsFormToPromptVariables } from '@/utils/prompt'
-import AppUnavailable from '@/app/components/app-unavailable'
-import { API_KEY, APP_ID, APP_INFO, isShowPrompt, promptTemplate } from '@/config'
-import type { Annotation as AnnotationType } from '@/types/log'
+import { fetchChatList, sendChatMessage, updateFeedback } from '@/service'
+import type { ChatItem, Feedbacktype, VisionSettings } from '@/types/app'
+import { replaceVarWithValues } from '@/utils/prompt'
 import { addFileInfos, sortAgentSorts } from '@/utils/tools'
+import Toast from '@/app/components/base/toast'
 
-import AppInitialization from '@/app/components/AppInitialization'
-import ConversationManagement from '@/app/components/ConversationManagement'
+interface ChatManagementProps {
+  APP_ID: string
+  promptConfig: any
+  visionConfig: VisionSettings | undefined
+  currConversationId: string
+  setCurrConversationId: (id: string, appId: string, isNew?: boolean) => void
+  setChatList: (list: ChatItem[]) => void
+  getChatList: () => ChatItem[]
+  setNewConversationInfo: (info: { name: string; introduction: string }) => void
+  setExistConversationInfo: (info: { name: string; introduction: string }) => void
+  resetNewConversationInputs: () => void
+  setChatStarted: () => void
+  setChatNotStarted: () => void
+  setConversationIdChangeBecauseOfNew: (value: boolean) => void
+  getConversationIdChangeBecauseOfNew: () => boolean
+  isNewConversation: boolean
+  currConversationInfo: any
+  currInputs: any
+  newConversationInputs: any
+  setCurrInputs: (inputs: any) => void
+}
 
-const Main: FC = () => {
+const ChatManagement: React.FC<ChatManagementProps> = ({
+  APP_ID,
+  promptConfig,
+  visionConfig,
+  currConversationId,
+  setCurrConversationId,
+  setChatList,
+  getChatList,
+  setNewConversationInfo,
+  setExistConversationInfo,
+  resetNewConversationInputs,
+  setChatStarted,
+  setChatNotStarted,
+  setConversationIdChangeBecauseOfNew,
+  getConversationIdChangeBecauseOfNew,
+  isNewConversation,
+  currConversationInfo,
+  currInputs,
+  newConversationInputs,
+  setCurrInputs,
+}) => {
   const { t } = useTranslation()
-  const media = useBreakpoints()
-  const isMobile = media === MediaType.mobile
-  const hasSetAppConfig = APP_ID && API_KEY
-
-  /*
-  * app info
-  */
-  const [appUnavailable, setAppUnavailable] = useState<boolean>(false)
-  const [isUnknownReason, setIsUnknownReason] = useState<boolean>(false)
-  const [promptConfig, setPromptConfig] = useState<PromptConfig | null>(null)
-  const [inited, setInited] = useState<boolean>(false)
-  // in mobile, show sidebar by click button
-  const [isShowSidebar, { setTrue: showSidebar, setFalse: hideSidebar }] = useBoolean(false)
-  const [visionConfig, setVisionConfig] = useState<VisionSettings | undefined>({
-    enabled: false,
-    number_limits: 2,
-    detail: Resolution.low,
-    transfer_methods: [TransferMethod.local_file],
-  })
-
-  useEffect(() => {
-    if (APP_INFO?.title)
-      document.title = `${APP_INFO.title}`
-    // document.title = `${APP_INFO.title} - Powered by Dify`
-  }, [APP_INFO?.title])
-
-  // onData change thought (the produce obj). https://github.com/immerjs/immer/issues/576
-  useEffect(() => {
-    setAutoFreeze(false)
-    return () => {
-      setAutoFreeze(true)
-    }
-  }, [])
-
-  /*
-  * conversation info
-  */
-  const {
-    conversationList,
-    setConversationList,
-    currConversationId,
-    getCurrConversationId,
-    setCurrConversationId,
-    getConversationIdFromStorage,
-    isNewConversation,
-    currConversationInfo,
-    currInputs,
-    newConversationInputs,
-    resetNewConversationInputs,
-    setCurrInputs,
-    setNewConversationInfo,
-    setExistConversationInfo,
-  } = useConversation()
-
-  const [conversationIdChangeBecauseOfNew, setConversationIdChangeBecauseOfNew, getConversationIdChangeBecauseOfNew] = useGetState(false)
-  const [isChatStarted, { setTrue: setChatStarted, setFalse: setChatNotStarted }] = useBoolean(false)
-
-  const conversationManagement = (
-    <ConversationManagement
-      APP_ID={APP_ID}
-      promptConfig={promptConfig}
-      inited={inited}
-      currConversationId={currConversationId}
-      setCurrConversationId={setCurrConversationId}
-      setChatList={setChatList}
-      getChatList={getChatList}
-      setNewConversationInfo={setNewConversationInfo}
-      setExistConversationInfo={setExistConversationInfo}
-      resetNewConversationInputs={resetNewConversationInputs}
-      setChatStarted={setChatStarted}
-      setChatNotStarted={setChatNotStarted}
-      setConversationIdChangeBecauseOfNew={setConversationIdChangeBecauseOfNew}
-      getConversationIdChangeBecauseOfNew={getConversationIdChangeBecauseOfNew}
-      isNewConversation={isNewConversation}
-      currConversationInfo={currConversationInfo}
-      currInputs={currInputs}
-      newConversationInputs={newConversationInputs}
-      setCurrInputs={setCurrInputs}
-      isShowPrompt={isShowPrompt}
-      setConversationList={setConversationList}
-      isResponding={isResponding}
-    />
-  )
+  const { notify } = Toast
   const [isResponding, { setTrue: setRespondingTrue, setFalse: setRespondingFalse }] = useBoolean(false)
   const [abortController, setAbortController] = useState<AbortController | null>(null)
-  const { notify } = Toast
-  const logError = (message: string) => {
-    notify({ type: 'error', message })
-  }
+  const [controlFocus, setControlFocus] = useState(0)
+  const [openingSuggestedQuestions, setOpeningSuggestedQuestions] = useState<string[]>([])
+  const [messageTaskId, setMessageTaskId] = useState('')
+  const [hasStopResponded, setHasStopResponded, getHasStopResponded] = useGetState(false)
+  const [isRespondingConIsCurrCon, setIsRespondingConCurrCon, getIsRespondingConIsCurrCon] = useGetState(true)
+  const [userQuery, setUserQuery] = useState('')
 
   const checkCanSend = () => {
     if (currConversationId !== '-1')
@@ -130,18 +73,11 @@ const Main: FC = () => {
 
     const emptyInput = inputLens < promptVariablesLens || Object.values(currInputs).find(v => !v)
     if (emptyInput) {
-      logError(t('app.errorMessage.valueOfVarRequired'))
+      notify({ type: 'error', message: t('app.errorMessage.valueOfVarRequired') })
       return false
     }
     return true
   }
-
-  const [controlFocus, setControlFocus] = useState(0)
-  const [openingSuggestedQuestions, setOpeningSuggestedQuestions] = useState<string[]>([])
-  const [messageTaskId, setMessageTaskId] = useState('')
-  const [hasStopResponded, setHasStopResponded, getHasStopResponded] = useGetState(false)
-  const [isRespondingConIsCurrCon, setIsRespondingConCurrCon, getIsRespondingConIsCurrCon] = useGetState(true)
-  const [userQuery, setUserQuery] = useState('')
 
   const updateCurrentQA = ({
     responseItem,
@@ -284,14 +220,22 @@ const Main: FC = () => {
           questionItem,
         })
       },
-
       async onCompleted(hasError?: boolean) {
         if (hasError)
           return
 
-        const { handleNewConversation } = conversationManagement
-        await handleNewConversation()
+        if (getConversationIdChangeBecauseOfNew()) {
+          const { data: allConversations }: any = await fetchConversations()
+          const newItem: any = await generationConversationName(allConversations[0].id)
 
+          const newAllConversations = produce(allConversations, (draft: any) => {
+            draft[0].name = newItem.name
+          })
+          setConversationList(newAllConversations as any)
+        }
+        setConversationIdChangeBecauseOfNew(false)
+        resetNewConversationInputs()
+        setChatNotStarted()
         setCurrConversationId(tempNewConversationId, APP_ID, true)
         setRespondingFalse()
         stopAutoRequest() // 停止自动请求
@@ -459,94 +403,7 @@ const Main: FC = () => {
     notify({ type: 'success', message: t('common.api.success') })
   }
 
-  const renderSidebar = () => {
-    if (!APP_ID || !APP_INFO || !promptConfig)
-      return null
-    return (
-      <Sidebar
-        list={conversationList}
-        onCurrentIdChange={conversationManagement.handleConversationIdChange}
-        currentId={currConversationId}
-        copyRight={APP_INFO.copyright || APP_INFO.title}
-      />
-    )
-  }
-
-  if (appUnavailable)
-    return <AppUnavailable isUnknownReason={isUnknownReason} errMessage={!hasSetAppConfig ? 'Please set APP_ID and API_KEY in config/index.tsx' : ''} />
-
-  if (!APP_ID || !APP_INFO || !promptConfig)
-    return <Loading type='app' />
-
-  return (
-    <div className='bg-gray-100'>
-      <Header
-        title={APP_INFO.title}
-        isMobile={isMobile}
-        onShowSideBar={showSidebar}
-        onCreateNewChat={() => conversationManagement.handleConversationIdChange('-1')}
-      />
-      <AppInitialization
-        APP_ID={APP_ID}
-        API_KEY={API_KEY}
-        APP_INFO={APP_INFO}
-        promptTemplate={promptTemplate}
-        setAppUnavailable={setAppUnavailable}
-        setIsUnknownReason={setIsUnknownReason}
-        setPromptConfig={setPromptConfig}
-        setInited={setInited}
-        setVisionConfig={setVisionConfig}
-        setConversationList={setConversationList}
-        setCurrConversationId={setCurrConversationId}
-        getConversationIdFromStorage={getConversationIdFromStorage}
-        setNewConversationInfo={setNewConversationInfo}
-      />
-      <div className="flex rounded-t-2xl bg-white overflow-hidden">
-        {/* sidebar */}
-        {!isMobile && renderSidebar()}
-        {isMobile && isShowSidebar && (
-          <div className='fixed inset-0 z-50'
-            style={{ backgroundColor: 'rgba(35, 56, 118, 0.2)' }}
-            onClick={hideSidebar}
-          >
-            <div className='inline-block' onClick={e => e.stopPropagation()}>
-              {renderSidebar()}
-            </div>
-          </div>
-        )}
-        {/* main */}
-        <div className='flex-grow flex flex-col h-[calc(100vh_-_3rem)] overflow-y-auto'>
-          <ConfigSence
-            conversationName={conversationManagement.conversationName}
-            hasSetInputs={conversationManagement.hasSetInputs}
-            isPublicVersion={isShowPrompt}
-            siteInfo={APP_INFO}
-            promptConfig={promptConfig}
-            onStartChat={conversationManagement.handleStartChat}
-            canEditInputs={canEditInputs}
-            savedInputs={currInputs as Record<string, any>}
-            onInputsChange={setCurrInputs}
-          ></ConfigSence>
-
-          {
-            conversationManagement.hasSetInputs && (
-              <div className='relative grow h-[200px] pc:w-[794px] max-w-full mobile:w-full pb-[66px] mx-auto mb-3.5 overflow-hidden'>
-                <div className='h-full overflow-y-auto' ref={chatListDomRef}>
-                  <Chat
-                    chatList={chatList}
-                    onSend={handleSend}
-                    onFeedback={handleFeedback}
-                    isResponding={isResponding}
-                    checkCanSend={checkCanSend}
-                    visionConfig={visionConfig}
-                  />
-                </div>
-              </div>)
-          }
-        </div>
-      </div>
-    </div>
-  )
+  return null
 }
 
-export default React.memo(Main)
+export default ChatManagement
