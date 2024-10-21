@@ -85,6 +85,19 @@ const Main: FC = () => {
   const [conversationIdChangeBecauseOfNew, setConversationIdChangeBecauseOfNew, getConversationIdChangeBecauseOfNew] = useGetState(false)
   const [isChatStarted, { setTrue: setChatStarted, setFalse: setChatNotStarted }] = useBoolean(false)
 
+  /*
+* chat info. chat is under conversation.
+*/
+  const [chatList, setChatList, getChatList] = useGetState<ChatItem[]>([])
+  const chatListDomRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    // scroll to bottom
+    if (chatListDomRef.current)
+      chatListDomRef.current.scrollTop = chatListDomRef.current.scrollHeight
+  }, [chatList, currConversationId])
+  // user can not edit inputs if user had send message
+  const canEditInputs = !chatList.some(item => item.isAnswer === false) && isNewConversation
+
   const conversationManagement = (
     <ConversationManagement
       APP_ID={APP_ID}
@@ -111,6 +124,7 @@ const Main: FC = () => {
       isResponding={isResponding}
     />
   )
+
   const [isResponding, { setTrue: setRespondingTrue, setFalse: setRespondingFalse }] = useBoolean(false)
   const [abortController, setAbortController] = useState<AbortController | null>(null)
   const { notify } = Toast
