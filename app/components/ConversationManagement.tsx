@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { useBoolean } from 'ahooks'
 import { useTranslation } from 'react-i18next'
+import { useBoolean, useGetState } from 'ahooks'
 import useConversation from '@/hooks/use-conversation'
 import { fetchChatList, fetchConversations, generationConversationName } from '@/service'
 import type { ChatItem, ConversationItem } from '@/types/app'
@@ -19,8 +19,6 @@ interface ConversationManagementProps {
   setNewConversationInfo: (info: { name: string; introduction: string }) => void
   setExistConversationInfo: (info: { name: string; introduction: string }) => void
   resetNewConversationInputs: () => void
-  setChatStarted: () => void
-  setChatNotStarted: () => void
   isNewConversation: boolean
   currConversationInfo: any
   currInputs: any
@@ -42,8 +40,6 @@ const ConversationManagement: React.FC<ConversationManagementProps> = ({
   setNewConversationInfo,
   setExistConversationInfo,
   resetNewConversationInputs,
-  setChatStarted,
-  setChatNotStarted,
   isNewConversation,
   currConversationInfo,
   currInputs,
@@ -59,7 +55,7 @@ const ConversationManagement: React.FC<ConversationManagementProps> = ({
   } = useConversation()
 
   const [conversationIdChangeBecauseOfNew, setConversationIdChangeBecauseOfNew, getConversationIdChangeBecauseOfNew] = useGetState(false)
-  const [isChatStarted, { setTrue: setChatStartedState, setFalse: setChatNotStartedState }] = useBoolean(false)
+  const [isChatStarted, { setTrue: setChatStarted, setFalse: setChatNotStarted }] = useBoolean(false)
 
   const handleStartChat = (inputs: Record<string, any>) => {
     createNewChat()

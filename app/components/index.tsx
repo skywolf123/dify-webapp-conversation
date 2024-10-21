@@ -107,8 +107,6 @@ const Main: FC = () => {
       setNewConversationInfo={setNewConversationInfo}
       setExistConversationInfo={setExistConversationInfo}
       resetNewConversationInputs={resetNewConversationInputs}
-      setChatStarted={setChatStarted}
-      setChatNotStarted={setChatNotStarted}
       isNewConversation={isNewConversation}
       currConversationInfo={currConversationInfo}
       currInputs={currInputs}
