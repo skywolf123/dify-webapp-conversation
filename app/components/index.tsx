@@ -82,9 +82,6 @@ const Main: FC = () => {
     setExistConversationInfo,
   } = useConversation()
 
-  const [conversationIdChangeBecauseOfNew, setConversationIdChangeBecauseOfNew, getConversationIdChangeBecauseOfNew] = useGetState(false)
-  const [isChatStarted, { setTrue: setChatStarted, setFalse: setChatNotStarted }] = useBoolean(false)
-
   /*
 * chat info. chat is under conversation.
 */
@@ -112,8 +109,6 @@ const Main: FC = () => {
       resetNewConversationInputs={resetNewConversationInputs}
       setChatStarted={setChatStarted}
       setChatNotStarted={setChatNotStarted}
-      setConversationIdChangeBecauseOfNew={setConversationIdChangeBecauseOfNew}
-      getConversationIdChangeBecauseOfNew={getConversationIdChangeBecauseOfNew}
       isNewConversation={isNewConversation}
       currConversationInfo={currConversationInfo}
       currInputs={currInputs}
