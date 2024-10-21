@@ -23,7 +23,7 @@ import { API_KEY, APP_ID, APP_INFO, isShowPrompt, promptTemplate } from '@/confi
 import type { Annotation as AnnotationType } from '@/types/log'
 import { addFileInfos, sortAgentSorts } from '@/utils/tools'
 
-import AppInitialization from '@/app/components/AppInitialization'
+import useInitApp from '@/app/components/AppInitialization'
 import ConversationManagement from '@/app/components/ConversationManagement'
 
 const Main: FC = () => {
@@ -117,6 +117,8 @@ const Main: FC = () => {
       isResponding={isResponding}
     />
   )
+
+  useInitApp(hasSetAppConfig, setAppUnavailable, setInited, setPromptConfig, setVisionConfig, setConversationList, setNewConversationInfo, setCurrConversationId, setIsUnknownReason)
 
   const [isResponding, { setTrue: setRespondingTrue, setFalse: setRespondingFalse }] = useBoolean(false)
   const [abortController, setAbortController] = useState<AbortController | null>(null)
@@ -492,21 +494,6 @@ const Main: FC = () => {
         isMobile={isMobile}
         onShowSideBar={showSidebar}
         onCreateNewChat={() => conversationManagement.handleConversationIdChange('-1')}
-      />
-      <AppInitialization
-        APP_ID={APP_ID}
-        API_KEY={API_KEY}
-        APP_INFO={APP_INFO}
-        promptTemplate={promptTemplate}
-        setAppUnavailable={setAppUnavailable}
-        setIsUnknownReason={setIsUnknownReason}
-        setPromptConfig={setPromptConfig}
-        setInited={setInited}
-        setVisionConfig={setVisionConfig}
-        setConversationList={setConversationList}
-        setCurrConversationId={setCurrConversationId}
-        getConversationIdFromStorage={getConversationIdFromStorage}
-        setNewConversationInfo={setNewConversationInfo}
       />
       <div className="flex rounded-t-2xl bg-white overflow-hidden">
         {/* sidebar */}
