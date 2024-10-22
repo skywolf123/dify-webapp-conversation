@@ -166,6 +166,10 @@ const Main: FC = () => {
     hideSidebar()
   }
 
+  const handleDeleteConversation = (id: string) => {
+    deleteConversation(id)
+  }
+
   /*
   * chat info. chat is under conversation.
   */
@@ -617,7 +621,7 @@ const Main: FC = () => {
       <Sidebar
         list={conversationList}
         onCurrentIdChange={handleConversationIdChange}
-        onDeleteConversation={() => deleteConversation(id)}
+        onDeleteConversation={handleDeleteConversation}
         currentId={currConversationId}
         copyRight={APP_INFO.copyright || APP_INFO.title}
       />

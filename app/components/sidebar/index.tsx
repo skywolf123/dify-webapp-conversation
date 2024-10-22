@@ -85,9 +85,9 @@ const Sidebar: FC<ISidebarProps> = ({
               {hoveredId === item.id && (
                 <button
                   className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
-                  onClick={async (e) => {
+                  onClick={(e) => {
                     e.stopPropagation()
-                    await onDeleteConversation(item.id) // 调用删除方法
+                    onDeleteConversation(item.id) // 调用删除方法
                   }}
                   title={t('删除')}
                 >
