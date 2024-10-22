@@ -22,6 +22,7 @@ export type ISidebarProps = {
   copyRight: string
   currentId: string
   onCurrentIdChange: (id: string) => void
+  onCurrentIdDel: (id: string) => void
   list: ConversationItem[]
 }
 
@@ -63,20 +64,25 @@ const Sidebar: FC<ISidebarProps> = ({
                 'group flex items-center rounded-md px-2 py-2 text-sm font-medium cursor-pointer relative',
               )}
             >
-              <ItemIcon
-                className={classNames(
-                  isCurrent
-                    ? 'text-primary-600'
-                    : 'text-gray-400 group-hover:text-gray-500',
-                  'mr-3 h-5 w-5 flex-shrink-0',
-                )}
-                aria-hidden="true"
-              />
-              {item.name}
+              <div className="flex-1 flex items-center">
+                <ItemIcon
+                  className={classNames(
+                    isCurrent
+                      ? 'text-primary-600'
+                      : 'text-gray-400 group-hover:text-gray-500',
+                    'mr-3 h-5 w-5 flex-shrink-0',
+                  )}
+                  aria-hidden="true"
+                />
+                {item.name}
+              </div>
               <Tooltip content="删除" placement="top">
-                <TrashIcon 
+                <TrashIcon
                   className="absolute right-2 h-5 w-5 flex-shrink-0 text-gray-400 hover:text-red-500 hidden group-hover:block cursor-pointer"
-                  onClick={() => onCurrentIdDel(item.id)}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onCurrentIdDel(item.id)
+                  }}
                 />
               </Tooltip>
             </div>

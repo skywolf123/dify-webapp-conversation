@@ -59,6 +59,12 @@ const Main: FC = () => {
     }
   }, [])
 
+  useEffect(() => {
+    const stopAutoRequest = autoRequestMeta();
+    
+    return () => stopAutoRequest(); // 组件卸载时清除定时器
+  }, []);
+
   /*
   * conversation info
   */
