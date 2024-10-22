@@ -166,8 +166,11 @@ const Main: FC = () => {
     hideSidebar()
   }
 
-  const handleDeleteConversation = (id: string) => {
-    deleteConversation(id)
+  const handleDeleteConversation = async (id: string) => {
+    await deleteConversation(id)
+    // 在删除会话后刷新会话列表
+    const response = await fetchConversations()
+    setConversationList(response.data)
   }
 
   /*
