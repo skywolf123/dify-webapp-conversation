@@ -10,7 +10,7 @@ import Toast from '@/app/components/base/toast'
 import Sidebar from '@/app/components/sidebar'
 import ConfigSence from '@/app/components/config-scence'
 import Header from '@/app/components/header'
-import { fetchAppParams, fetchChatList, fetchConversations, generationConversationName, sendChatMessage, updateFeedback } from '@/service'
+import { fetchAppParams, fetchChatList, fetchConversations, generationConversationName, sendChatMessage, updateFeedback, autoRequestMeta, deleteConversation } from '@/service'
 import type { ChatItem, ConversationItem, Feedbacktype, PromptConfig, VisionFile, VisionSettings } from '@/types/app'
 import { Resolution, TransferMethod, WorkflowRunningStatus } from '@/types/app'
 import Chat from '@/app/components/chat'
@@ -377,30 +377,7 @@ const Main: FC = () => {
 
     setRespondingTrue()
 
-    // 添加自动请求 meta 的定时器
-    let intervalId: NodeJS.Timeout | null = null;
-
-    const startAutoRequest = () => {
-      intervalId = setInterval(() => {
-        fetch('/api/meta')
-          .then(response => response.json())
-          .then(data => {
-            console.log('客户端自动请求 /api/meta 成功:', data);
-          })
-          .catch(error => {
-            console.error('客户端自动请求 /api/meta 失败:', error);
-          });
-      }, 20000); // 每 20 秒执行一次
-    };
-
-    const stopAutoRequest = () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-        intervalId = null;
-      }
-    };
-
-    startAutoRequest();
+    const stopAutoRequest = autoRequestMeta()
 
     sendChatMessage(data, {
       getAbortController: (abortController) => {
@@ -626,6 +603,7 @@ const Main: FC = () => {
       <Sidebar
         list={conversationList}
         onCurrentIdChange={handleConversationIdChange}
+        onCurrentIdDel={() => deleteConversation(id)}
         currentId={currConversationId}
         copyRight={APP_INFO.copyright || APP_INFO.title}
       />

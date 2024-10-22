@@ -1,9 +1,15 @@
-export async function GET() {
-  return new Response(JSON.stringify({ status: 'keeping alive' }), {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
+import { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
+import { client, getInfo, setSession } from '@/app/api/utils/common'
+
+export async function GET(request: NextRequest) {
+  const { sessionId, user } = getInfo(request)
+  try {
+    return NextResponse.json({ status: 'keeping alive' }, {
+      headers: setSession(sessionId),
+    })
+  }
+  catch (error) {
+    return NextResponse.json([])
+  }
 }
-// 测试 client
-// testClient()

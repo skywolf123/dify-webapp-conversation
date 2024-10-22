@@ -4,10 +4,12 @@ import { useTranslation } from 'react-i18next'
 import {
   ChatBubbleOvalLeftEllipsisIcon,
   PencilSquareIcon,
+  TrashIcon
 } from '@heroicons/react/24/outline'
 import { ChatBubbleOvalLeftEllipsisIcon as ChatBubbleOvalLeftEllipsisSolidIcon } from '@heroicons/react/24/solid'
 import Button from '@/app/components/base/button'
 // import Card from './card'
+import Tooltip from '@app/components/base/tooltip'
 import type { ConversationItem } from '@/types/app'
 
 function classNames(...classes: any[]) {
@@ -27,6 +29,7 @@ const Sidebar: FC<ISidebarProps> = ({
   copyRight,
   currentId,
   onCurrentIdChange,
+  onCurrentIdDel,
   list,
 }) => {
   const { t } = useTranslation()
@@ -57,7 +60,7 @@ const Sidebar: FC<ISidebarProps> = ({
                 isCurrent
                   ? 'bg-primary-50 text-primary-600'
                   : 'text-gray-700 hover:bg-gray-100 hover:text-gray-700',
-                'group flex items-center rounded-md px-2 py-2 text-sm font-medium cursor-pointer',
+                'group flex items-center rounded-md px-2 py-2 text-sm font-medium cursor-pointer relative',
               )}
             >
               <ItemIcon
@@ -70,6 +73,12 @@ const Sidebar: FC<ISidebarProps> = ({
                 aria-hidden="true"
               />
               {item.name}
+              <Tooltip content="删除" placement="top">
+                <TrashIcon 
+                  className="absolute right-2 h-5 w-5 flex-shrink-0 text-gray-400 hover:text-red-500 hidden group-hover:block cursor-pointer"
+                  onClick={() => onCurrentIdDel(item.id)}
+                />
+              </Tooltip>
             </div>
           )
         })}
