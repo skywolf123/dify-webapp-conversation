@@ -22,7 +22,7 @@ export type ISidebarProps = {
   copyRight: string
   currentId: string
   onCurrentIdChange: (id: string) => void
-  onCurrentIdDel: (id: string) => void
+  onDeleteConversation: (id: string) => void
   list: ConversationItem[]
 }
 
@@ -30,10 +30,12 @@ const Sidebar: FC<ISidebarProps> = ({
   copyRight,
   currentId,
   onCurrentIdChange,
-  onCurrentIdDel,
+  onDeleteConversation,
   list,
 }) => {
   const { t } = useTranslation()
+  const [hoveredId, setHoveredId] = useState<string | null>(null)
+
   return (
     <div
       className="shrink-0 flex flex-col overflow-y-auto bg-white pc:w-[244px] tablet:w-[192px] mobile:w-[240px]  border-r border-gray-200 tablet:h-[calc(100vh_-_3rem)] mobile:h-screen"
@@ -55,16 +57,20 @@ const Sidebar: FC<ISidebarProps> = ({
             = isCurrent ? ChatBubbleOvalLeftEllipsisSolidIcon : ChatBubbleOvalLeftEllipsisIcon
           return (
             <div
-              onClick={() => onCurrentIdChange(item.id)}
               key={item.id}
               className={classNames(
                 isCurrent
                   ? 'bg-primary-50 text-primary-600'
                   : 'text-gray-700 hover:bg-gray-100 hover:text-gray-700',
-                'group flex items-center rounded-md px-2 py-2 text-sm font-medium cursor-pointer relative',
+                'group flex items-center justify-between rounded-md px-2 py-2 text-sm font-medium cursor-pointer relative',
               )}
+              onMouseEnter={() => setHoveredId(item.id)}
+              onMouseLeave={() => setHoveredId(null)}
             >
-              <div className="flex-1 flex items-center">
+              <div
+                className="flex items-center flex-1"
+                onClick={() => onCurrentIdChange(item.id)}
+              >
                 <ItemIcon
                   className={classNames(
                     isCurrent
@@ -76,15 +82,18 @@ const Sidebar: FC<ISidebarProps> = ({
                 />
                 {item.name}
               </div>
-              <Tooltip content="删除" placement="top">
-                <TrashIcon
-                  className="absolute right-2 h-5 w-5 flex-shrink-0 text-gray-400 hover:text-red-500 hidden group-hover:block cursor-pointer"
-                  onClick={(e) => {
+              {hoveredId === item.id && (
+                <button
+                  className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                  onClick={async (e) => {
                     e.stopPropagation()
-                    onCurrentIdDel(item.id)
+                    await onDeleteConversation(item.id) // 调用删除方法
                   }}
-                />
-              </Tooltip>
+                  title={t('删除')}
+                >
+                  <TrashIcon className="h-4 w-4" />
+                </button>
+              )}
             </div>
           )
         })}

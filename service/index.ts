@@ -61,10 +61,8 @@ export const generationConversationName = async (id: string) => {
   return post(`conversations/${id}/name`, { body: { auto_generate: true } })
 }
 
-export const autoRequestMeta = async () => {
-  const intervalId = setInterval(() => { get('meta') }, 20000)
-
-  return () => clearInterval(intervalId) // 返回取消定时器的函数
+export const fetchMeta = async () => {
+  return get('meta')
 }
 
 export const deleteConversation = async (id: string) => {
