@@ -9,7 +9,7 @@ import {
 import { ChatBubbleOvalLeftEllipsisIcon as ChatBubbleOvalLeftEllipsisSolidIcon } from '@heroicons/react/24/solid'
 import Button from '@/app/components/base/button'
 // import Card from './card'
-import Tooltip from '@app/components/base/tooltip'
+import Tooltip from '@/app/components/base/tooltip'
 import type { ConversationItem } from '@/types/app'
 
 function classNames(...classes: any[]) {
