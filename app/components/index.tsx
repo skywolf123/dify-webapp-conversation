@@ -670,6 +670,7 @@ const Main: FC = () => {
             canEditInputs={canEditInputs}
             savedInputs={currInputs as Record<string, any>}
             onInputsChange={setCurrInputs}
+            onButtonClick={handleSend}
           ></ConfigSence>
 
           {
