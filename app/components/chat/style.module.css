@@ -31,6 +31,7 @@
   top: 0;
   width: 8px;
   height: 12px;
+  max-width: 100%; /* 确保最大宽度 */
 }
 
 .answer::before {
@@ -58,6 +59,7 @@
   border-radius: 12px;
   line-height: 20px;
   background-color: #fff;
+  max-width: 100%;  /* 确保最大宽度 */
 }
 
 .textArea:hover {
@@ -88,4 +90,9 @@
 
 .textArea:focus+div .sendBtn {
   background-image: url(./icons/send-active.svg);
+}
+
+.chatContainer {
+  overflow: hidden; /* 强制隐藏溢出 */
+  max-width: 100vw; /* 确保最大宽度 */
 }

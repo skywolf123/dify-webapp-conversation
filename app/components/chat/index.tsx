@@ -124,7 +124,7 @@ const Chat: FC<IChatProps> = ({
   }
 
   return (
-    <div className={cn(!feedbackDisabled && 'px-3.5', 'h-full')}>
+    <div className={cn('chatContainer', !feedbackDisabled && 'px-3.5', 'h-full')}>
       {/* Chat List */}
       <div className="h-full space-y-[30px]">
         {chatList.map((item) => {
