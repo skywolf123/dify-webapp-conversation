@@ -118,7 +118,7 @@ const Chat: FC<IChatProps> = ({
   }
 
   // 处理按钮点击事件
-  const handleButtonClick = (buttonText: string) => {
+  export const handleButtonClick = (buttonText: string) => {
     // 调用 onSend 函数，传入按钮文本
     onSend(buttonText, []);
   }

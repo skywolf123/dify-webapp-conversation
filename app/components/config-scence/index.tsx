@@ -2,12 +2,12 @@ import type { FC } from 'react'
 import React from 'react'
 import type { IWelcomeProps } from '../welcome'
 import Welcome from '../welcome'
-import { onSend } from '../chat/index' // 导入 onSend 函数
+import { handleButtonClick } from '../chat/index' // 导入 handleButtonClick 函数
 
 const ConfigSence: FC<IWelcomeProps> = (props) => {
   // 创建 onButtonClick 函数来处理点击事件
   const onButtonClick = (buttonText: string) => {
-    onSend(buttonText, []) // 调用 onSend，并传入按钮文本
+    handleButtonClick(buttonText) // 调用 handleButtonClick，并传入按钮文本
   }
 
   return (

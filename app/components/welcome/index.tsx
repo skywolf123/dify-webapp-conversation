@@ -87,7 +87,7 @@ const Welcome: FC<IWelcomeProps> = ({
       <div className='absolute top-0 left-0 right-0 flex items-center justify-between border-b border-gray-100 mobile:h-12 tablet:h-16 px-8 bg-white'>
         <div className='text-gray-900'>{conversationName}</div>
         <button
-          className='ml-4 px-3 py-1 text-sm text-white bg-blue-500 rounded'
+          className='ml-4 px-3 py-1 text-sm text-primary-600 bg-blue-500 rounded'
           onClick={() => onButtonClick('功能介绍')}
         >
           功能介绍
