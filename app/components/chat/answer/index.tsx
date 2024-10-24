@@ -1,7 +1,7 @@
 'use client'
 import type { FC } from 'react'
 import React, { useRef, useState, useMemo } from 'react'
-import { HandThumbDownIcon, HandThumbUpIcon, ClipboardIcon, ClipboardDocumentCheckIcon } from '@heroicons/react/24/outline'
+import { HandThumbDownIcon, HandThumbUpIcon } from '@heroicons/react/24/outline'
 import { useTranslation } from 'react-i18next'
 import LoadingAnim from '../loading-anim'
 import type { FeedbackFunc } from '../type'
@@ -48,8 +48,14 @@ export const EditIconSolid: FC<{ className?: string }> = ({ className }) => {
   </svg>
 }
 
+const ClipboardIcon: FC<{ className?: string }> = ({ className }) => {
+  return <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+  </svg>
+}
+
 const ClipboardCheckIcon: FC<{ className?: string }> = ({ className }) => {
-  return <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+  return <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
     <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
   </svg>
 }
@@ -86,6 +92,7 @@ const Answer: FC<IAnswerProps> = ({
   const contentRef = useRef<HTMLDivElement>(null);
 
   const [isCopied, setIsCopied] = useState(false);
+  const [isMarkdownCopied, setIsMarkdownCopied] = useState(false); // 新的状态
 
   // 提取「」中的内容
   const extractButtons = useMemo(() => {
@@ -135,38 +142,52 @@ const Answer: FC<IAnswerProps> = ({
   const renderItemOperation = () => {
     const handleCopy = () => {
       if (contentRef.current) {
-        const range = document.createRange();
-        range.selectNodeContents(contentRef.current);
-        const selection = window.getSelection();
+        const range = document.createRange()
+        range.selectNodeContents(contentRef.current)
+        const selection = window.getSelection()
         if (selection) {
-          selection.removeAllRanges();
-          selection.addRange(range);
+          selection.removeAllRanges()
+          selection.addRange(range)
 
           // 创建一个临时的 div 元素
-          const tempDiv = document.createElement('div');
-          tempDiv.innerHTML = contentRef.current.innerHTML;
-          tempDiv.style.color = 'black'; // 设置文本颜色
-          tempDiv.style.backgroundColor = 'white'; // 设置背景颜色
-          document.body.appendChild(tempDiv);
+          const tempDiv = document.createElement('div')
+          tempDiv.innerHTML = contentRef.current.innerHTML
+          tempDiv.style.color = 'black' // 设置文本颜色
+          tempDiv.style.backgroundColor = 'white' // 设置背景颜色
+          document.body.appendChild(tempDiv)
 
           // 选择 tempDiv 的内容
-          const tempRange = document.createRange();
-          tempRange.selectNodeContents(tempDiv);
-          selection.removeAllRanges();
-          selection.addRange(tempRange);
+          const tempRange = document.createRange()
+          tempRange.selectNodeContents(tempDiv)
+          selection.removeAllRanges()
+          selection.addRange(tempRange)
 
           // 复制内容到剪贴板
-          document.execCommand('copy');
+          document.execCommand('copy')
 
           // 移除临时元素
-          document.body.removeChild(tempDiv);
+          document.body.removeChild(tempDiv)
 
-          selection.removeAllRanges();
-          setIsCopied(true);
-          setTimeout(() => setIsCopied(false), 2000); // 2秒后恢复原状态
+          selection.removeAllRanges()
+          setIsCopied(true)
+          setTimeout(() => setIsCopied(false), 2000) // 2秒后恢复原状态
         }
       }
-    };
+    }
+
+
+    const handleCopyMarkdown = () => {
+      if (content) {
+        const textArea = document.createElement("textarea")
+        textArea.value = content // 假设 content 是 Markdown 原文
+        document.body.appendChild(textArea)
+        textArea.select()
+        document.execCommand("copy")
+        document.body.removeChild(textArea)
+        setIsMarkdownCopied(true)
+        setTimeout(() => setIsMarkdownCopied(false), 2000)
+      }
+    }
 
     const userOperation = () => {
       return feedback?.rating
@@ -179,18 +200,19 @@ const Answer: FC<IAnswerProps> = ({
             {OperationBtn({ innerContent: <IconWrapper><RatingIcon isLike={false} /></IconWrapper>, onClick: () => onFeedback?.(id, { rating: 'dislike' }) })}
           </Tooltip>
         </div>
-    };
-
+    }
     return (
       <div className={`${s.itemOperation} flex gap-2`}>
-        {/* <Tooltip selector={`copy-button-${randomString(16)}`} content={isCopied ? t('common.operation.copied') as string : t('common.operation.copy') as string}> */}
         <Tooltip selector={`copy-button-${randomString(16)}`} content={'复制'}>
-          {OperationBtn({ innerContent: <IconWrapper>{isCopied ? <ClipboardCheckIcon className="w-4 h-4" /> : <ClipboardIcon className="w-4 h-4" />}</IconWrapper>, onClick: handleCopy })}
+          {OperationBtn({ innerContent: <IconWrapper>{isCopied ? <ClipboardCheckIcon className="w-4 h-4 text-primary-600" /> : <ClipboardIcon className="w-4 h-4 text-primary-600" />}</IconWrapper>, onClick: handleCopy })}
+        </Tooltip>
+        <Tooltip selector={`copy-markdown-button-${randomString(16)}`} content={'复制文本'}>
+          {OperationBtn({ innerContent: <IconWrapper>{isMarkdownCopied ? <ClipboardCheckIcon className="w-4 h-4 text-gray-600" /> : <ClipboardIcon className="w-4 h-4 text-gray-600" />}</IconWrapper>, onClick: handleCopyMarkdown })}
         </Tooltip>
         {/* {userOperation()} */}
       </div>
-    );
-  };
+    )
+  }
 
   const getImgs = (list?: VisionFile[]) => {
     if (!list)
