@@ -60,6 +60,20 @@ const ClipboardCheckIcon: FC<{ className?: string }> = ({ className }) => {
   </svg>
 }
 
+const ClipboardSolidIcon: FC<{ className?: string }> = ({ className }) => {
+  return <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+    <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+    <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+  </svg>
+}
+
+const ClipboardCheckSolidIcon: FC<{ className?: string }> = ({ className }) => {
+  return <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+    <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+  </svg>
+}
+
 const IconWrapper: FC<{ children: React.ReactNode | string }> = ({ children }) => {
   return <div className={'rounded-lg h-6 w-6 flex items-center justify-center hover:bg-gray-100'}>
     {children}
@@ -205,10 +219,10 @@ const Answer: FC<IAnswerProps> = ({
     return (
       <div className={`${s.itemOperation} flex gap-2`}>
         <Tooltip selector={`copy-button-${randomString(16)}`} content={'复制'}>
-          {OperationBtn({ innerContent: <IconWrapper>{isCopied ? <ClipboardCheckIcon className="w-4 h-4 text-primary-600" /> : <ClipboardIcon className="w-4 h-4 text-primary-600" />}</IconWrapper>, onClick: handleCopy })}
+          {OperationBtn({ innerContent: <IconWrapper>{isCopied ? <ClipboardCheckSolidIcon className="w-4 h-4" /> : <ClipboardSolidIcon className="w-4 h-4" />}</IconWrapper>, onClick: handleCopy })}
         </Tooltip>
         <Tooltip selector={`copy-markdown-button-${randomString(16)}`} content={'复制文本'}>
-          {OperationBtn({ innerContent: <IconWrapper>{isMarkdownCopied ? <ClipboardCheckIcon className="w-4 h-4 text-gray-600" /> : <ClipboardIcon className="w-4 h-4 text-gray-600" />}</IconWrapper>, onClick: handleCopyMarkdown })}
+          {OperationBtn({ innerContent: <IconWrapper>{isMarkdownCopied ? <ClipboardCheckIcon className="w-4 h-4" /> : <ClipboardIcon className="w-4 h-4" />}</IconWrapper>, onClick: handleCopyMarkdown })}
         </Tooltip>
         {/* {userOperation()} */}
       </div>
