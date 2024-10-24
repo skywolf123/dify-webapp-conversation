@@ -48,15 +48,15 @@ export const EditIconSolid: FC<{ className?: string }> = ({ className }) => {
   </svg>
 }
 
-const ClipboardIcon: FC<{ className?: string }> = ({ className }) => {
-  return <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
-    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+const ClipboardIcon: FC<{ className?: string; color?: string }> = ({ className, color = "currentColor" }) => {
+  return <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 ${className}`} fill="none" viewBox="0 0 24 24" stroke={color} strokeWidth="1">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
   </svg>
 }
 
-const ClipboardCheckIcon: FC<{ className?: string }> = ({ className }) => {
-  return <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
-    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+const ClipboardCheckIcon: FC<{ className?: string; color?: string }> = ({ className, color = "currentColor" }) => {
+  return <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 ${className}`} fill="none" viewBox="0 0 24 24" stroke={color} strokeWidth="1">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
   </svg>
 }
 
@@ -201,13 +201,14 @@ const Answer: FC<IAnswerProps> = ({
           </Tooltip>
         </div>
     }
+
     return (
       <div className={`${s.itemOperation} flex gap-2`}>
         <Tooltip selector={`copy-button-${randomString(16)}`} content={'复制'}>
-          {OperationBtn({ innerContent: <IconWrapper>{isCopied ? <ClipboardCheckIcon className="w-4 h-4 text-primary-600" /> : <ClipboardIcon className="w-4 h-4 text-primary-600" />}</IconWrapper>, onClick: handleCopy })}
+          {OperationBtn({ innerContent: <IconWrapper>{isCopied ? <ClipboardCheckIcon color="text-primary-600" className="w-4 h-4" /> : <ClipboardIcon color="text-primary-600" className="w-4 h-4" />}</IconWrapper>, onClick: handleCopy })}
         </Tooltip>
         <Tooltip selector={`copy-markdown-button-${randomString(16)}`} content={'复制文本'}>
-          {OperationBtn({ innerContent: <IconWrapper>{isMarkdownCopied ? <ClipboardCheckIcon className="w-4 h-4 text-gray-600" /> : <ClipboardIcon className="w-4 h-4 text-gray-600" />}</IconWrapper>, onClick: handleCopyMarkdown })}
+          {OperationBtn({ innerContent: <IconWrapper>{isMarkdownCopied ? <ClipboardCheckIcon color="text-gray-600" className="w-4 h-4" /> : <ClipboardIcon color="text-gray-600" className="w-4 h-4" />}</IconWrapper>, onClick: handleCopyMarkdown })}
         </Tooltip>
         {/* {userOperation()} */}
       </div>
