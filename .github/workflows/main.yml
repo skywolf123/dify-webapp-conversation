@@ -41,21 +41,16 @@ jobs:
           name: dify-webapp
           path: .
 
+      - name: Install sshpass
+        run: sudo apt-get install sshpass -y
+
       - name: Copy Docker image to server
-        env:
-          SERVER_IP: ${{ secrets.SERVER_IP }}
-          SERVER_USER: ${{ secrets.SERVER_USER }}
-          SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
         run: |
-          scp -o StrictHostKeyChecking=no dify-webapp.tar.gz $SERVER_USER@$SERVER_IP:/tmp
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" scp -o StrictHostKeyChecking=no dify-webapp.tar.gz ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/tmp
 
       - name: Load and run Docker image on server
-        env:
-          SERVER_IP: ${{ secrets.SERVER_IP }}
-          SERVER_USER: ${{ secrets.SERVER_USER }}
-          SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
         run: |
-          sshpass -p $SERVER_PASSWORD ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
             docker load < /tmp/dify-webapp.tar.gz
             docker run -d --rm -p 80:3000 --name dify-webapp dify-webapp:latest
           EOF
