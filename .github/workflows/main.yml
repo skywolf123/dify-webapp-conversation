@@ -11,10 +11,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v3
 
       - name: Build Docker image
         run: |
@@ -25,7 +25,7 @@ jobs:
           docker save dify-webapp:latest | gzip > dify-webapp.tar.gz
 
       - name: Upload Docker image
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: dify-webapp
           path: dify-webapp.tar.gz
@@ -36,7 +36,7 @@ jobs:
 
     steps:
       - name: Download Docker image
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: dify-webapp
           path: .
