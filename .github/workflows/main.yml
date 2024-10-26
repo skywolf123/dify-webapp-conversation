@@ -3,7 +3,7 @@ name: Build and Deploy Next.js Project
 on:
   push:
     branches:
-      - main  # 你可以指定要触发的分支
+      - docker  # 你可以指定要触发的分支
 
 jobs:
   build:
