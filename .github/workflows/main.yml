@@ -6,51 +6,10 @@ on:
       - docker  # 您可以指定要触发的分支
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build Docker image
-        run: |
-          docker build -t dify-webapp:latest .
-
-      - name: Save Docker image
-        run: |
-          docker save dify-webapp:latest | gzip > dify-webapp.tar.gz
-
-      - name: Upload Docker image
-        uses: actions/upload-artifact@v4
-        with:
-          name: dify-webapp
-          path: dify-webapp.tar.gz
-
   deploy:
     runs-on: ubuntu-latest
-    needs: build  # 确保构建先完成
-
+    
     steps:
-      - name: Download Docker image
-        uses: actions/download-artifact@v4
-        with:
-          name: dify-webapp
-          path: .
-
-      - name: Install sshpass
-        run: sudo apt-get install sshpass -y
-
       - name: Copy Docker image to server
         run: |
-          sshpass -p "${{ secrets.SERVER_PASSWORD }}" scp -o StrictHostKeyChecking=no dify-webapp.tar.gz ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/tmp
-
-      - name: Load and run Docker image on server
-        run: |
-          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-            docker load < /tmp/dify-webapp.tar.gz
-            docker run -d --rm -p 80:3000 --name dify-webapp dify-webapp:latest
-          EOF
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} 'touch /tmp/newfile.txt'
