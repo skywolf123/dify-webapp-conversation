@@ -27,5 +27,5 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: dify-webapp:latest
+          tags: ghcr.io/${{ github.repository }}/dify-webapp:latest
 
