@@ -1,9 +1,9 @@
-name: Build and Deploy Next.js Project
+name: Build and Deploy Docker Image
 
 on:
   push:
     branches:
-      - docker  # 你可以指定要触发的分支
+      - docker  # 您可以指定要触发的分支
 
 jobs:
   build:
@@ -13,66 +13,46 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'  # 使用与 Dockerfile 中相同的 Node.js 版本
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Install dependencies
-        run: yarn install  # 使用 yarn 安装依赖
-
-      - name: Build Next.js project
-        run: yarn build  # 构建 Next.js 项目
-
-      - name: Archive production build
+      - name: Build Docker image
         run: |
-          mkdir -p build
-          cp -R .next build/
-          cp -R public build/
-          cp package.json build/
-          cp yarn.lock build/  # 如果使用 yarn，则需要复制 yarn.lock
-
-      - name: Upload build artifact
+          docker build -t dify-webapp:latest .
+      - name: Save Docker image
+        run: |
+          docker save dify-webapp:latest | gzip > dify-webapp.tar.gz
+      - name: Upload Docker image
         uses: actions/upload-artifact@v4
         with:
-          name: nextjs-build
-          path: build/
-          
+          name: dify-webapp
+          path: dify-webapp.tar.gz
+
   deploy:
     runs-on: ubuntu-latest
     needs: build  # 确保构建先完成
 
     steps:
-      - name: Download build artifact
+      - name: Download Docker image
         uses: actions/download-artifact@v4
         with:
-          name: nextjs-build
-          path: build/
+          name: dify-webapp
+          path: .
 
-      - name: Install sshpass
-        run: sudo apt-get install sshpass -y
-
-      - name: Copy files to server
+      - name: Copy Docker image to server
         env:
           SERVER_IP: ${{ secrets.SERVER_IP }}
           SERVER_USER: ${{ secrets.SERVER_USER }}
           SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
         run: |
-          sshpass -p "${{ secrets.SERVER_PASSWORD }}" scp -o StrictHostKeyChecking=no -r build/* $SERVER_USER@$SERVER_IP:/root/dify-webapp
-
-      - name: SSH into server and start application
+          scp -o StrictHostKeyChecking=no dify-webapp.tar.gz $SERVER_USER@$SERVER_IP:/tmp
+      - name: Load and run Docker image on server
         env:
           SERVER_IP: ${{ secrets.SERVER_IP }}
           SERVER_USER: ${{ secrets.SERVER_USER }}
           SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
         run: |
-          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'
-            # Navigate to the application directory
-            cd /root/dify-webapp
-            
-            # Install dependencies (if needed)
-            yarn install --production
-            
-            # Start the application
-            yarn start
+          sshpass -p $SERVER_PASSWORD ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'
+            docker load < /tmp/dify-webapp.tar.gz
+            docker run -d --rm -p 43000:3000 --name dify-webapp dify-webapp:latest
           EOF
