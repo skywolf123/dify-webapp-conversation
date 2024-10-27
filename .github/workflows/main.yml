@@ -5,6 +5,10 @@ on:
     branches:
       - docker  # 您可以指定要触发的分支
 
+permissions:
+  contents: write
+  packages: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
