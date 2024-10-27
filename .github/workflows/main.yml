@@ -45,7 +45,7 @@ jobs:
           SERVER_USER: ${{ secrets.SERVER_USER }}
           SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
         run: |
-          scp -o StrictHostKeyChecking=no dify-webapp.tar.gz $SERVER_USER@$SERVER_IP:/tmp
+          sshpass -p $SERVER_PASSWORD scp -o StrictHostKeyChecking=no dify-webapp.tar.gz $SERVER_USER@$SERVER_IP:/tmp
       - name: Load and run Docker image on server
         env:
           SERVER_IP: ${{ secrets.SERVER_IP }}
