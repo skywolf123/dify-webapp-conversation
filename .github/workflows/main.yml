@@ -39,6 +39,9 @@ jobs:
           name: dify-webapp
           path: .
 
+      - name: Install sshpass
+        run: sudo apt-get install -y sshpass
+
       - name: Copy Docker image to server
         env:
           SERVER_IP: ${{ secrets.SERVER_IP }}
