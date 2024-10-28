@@ -46,9 +46,6 @@ jobs:
         run: |
           echo "
           #!/bin/bash
-          LOG_FILE=/tmp/deploy.log
-          exec > >(tee -a \$LOG_FILE) 2>&1  # 将标准输出和错误输出重定向到日志文件
-      
           echo 'Starting deployment...'
           docker stop dify-webapp || true
           echo 'Stopped existing container (if any).'
@@ -68,8 +65,10 @@ jobs:
           echo 'Container started successfully.'
           " > deploy_script.sh
       
+          # 赋予脚本执行权限
           sshpass -p $SERVER_PASSWORD scp -o StrictHostKeyChecking=no deploy_script.sh $SERVER_USER@$SERVER_IP:/tmp/
           
-          sshpass -p $SERVER_PASSWORD ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "bash /tmp/deploy_script.sh"
+          # 在远程服务器上后台运行脚本，重定向输出到日志文件
+          sshpass -p $SERVER_PASSWORD ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "nohup bash /tmp/deploy_script.sh > /tmp/deploy.log 2>&1 &"
 
 
