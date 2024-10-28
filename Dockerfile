@@ -23,7 +23,12 @@ RUN yarn build
 FROM --platform=linux/amd64 node:20-alpine AS runner
 WORKDIR /app
 
+# 复制 standalone 输出
 COPY --from=builder /app/.next/standalone ./
+
+# 复制 public 和 .next/static 文件夹
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/static ./.next/static
 
 EXPOSE 3000
 
