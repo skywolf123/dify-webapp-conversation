@@ -1,12 +1,33 @@
-FROM --platform=linux/amd64 node:20-bullseye-slim
+# 这里安装node_modules
+FROM --platform=linux/amd64 node:20-alpine AS deps
 
 WORKDIR /app
 
-COPY . .
+COPY package*.json ./
 
 RUN yarn install
+
+# 这里是Next.js打包输出的版本
+FROM --platform=linux/amd64 node:20-alpine AS builder
+
+WORKDIR /app
+
+# 拷贝来自deps阶段的/app/node_modules文件
+COPY --from=deps /app/node_modules ./node_modules
+
+COPY . .
+
 RUN yarn build
+
+# 这里就是打包完之后运行的版本
+FROM --platform=linux/amd64 node:20-alpine AS runner
+WORKDIR /app
+
+COPY --from=builder /app/.next/standalone ./
 
 EXPOSE 3000
 
-CMD ["yarn", "start"]
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+CMD ["node", "server.js"]
