@@ -39,15 +39,16 @@ jobs:
 
     steps:
       - name: Update server 
-        uses: appleboy/ssh-action@v1.1.0
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          password: ${{ secrets.SERVER_PASSWORD }}
-          script: |
+        env:
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+        run: |
+          sshpass -p $SERVER_PASSWORD ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'
             docker stop dify-webapp
             docker rm dify-webapp
             docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} https://ghcr.io 
             docker pull ghcr.io/${{ github.repository }}/dify-webapp:latest
             docker run -d -p 80:3000 --restart=always --name dify-webapp ghcr.io/${{ github.repository }}/web-image
+          EOF
 
