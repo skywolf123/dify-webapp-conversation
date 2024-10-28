@@ -44,11 +44,32 @@ jobs:
           SERVER_USER: ${{ secrets.SERVER_USER }}
           SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
         run: |
-          sshpass -p $SERVER_PASSWORD ssh -o ServerAliveInterval=300 -o ServerAliveCountMax=5 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'
-            docker stop dify-webapp
-            docker rm dify-webapp
-            docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} https://ghcr.io 
-            docker pull ghcr.io/${{ github.repository }}/dify-webapp:latest
-            docker run -d -p 80:3000 --restart=always --name dify-webapp ghcr.io/${{ github.repository }}/web-image
-          EOF
+          echo "
+          #!/bin/bash
+          LOG_FILE=/tmp/deploy.log
+          exec > >(tee -a \$LOG_FILE) 2>&1  # 将标准输出和错误输出重定向到日志文件
+      
+          echo 'Starting deployment...'
+          docker stop dify-webapp || true
+          echo 'Stopped existing container (if any).'
+          
+          docker rm dify-webapp || true
+          echo 'Removed existing container (if any).'
+          
+          docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} https://ghcr.io 
+          echo 'Logged in to GitHub Container Registry.'
+      
+          echo 'Pulling the latest image...'
+          docker pull ghcr.io/${{ github.repository }}/dify-webapp:latest
+          echo 'Image pulled successfully.'
+      
+          echo 'Running the container...'
+          docker run -d -p 80:3000 --restart=always --name dify-webapp ghcr.io/${{ github.repository }}/dify-webapp:latest
+          echo 'Container started successfully.'
+          " > deploy_script.sh
+      
+          sshpass -p $SERVER_PASSWORD scp -o StrictHostKeyChecking=no deploy_script.sh $SERVER_USER@$SERVER_IP:/tmp/
+          
+          sshpass -p $SERVER_PASSWORD ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "bash /tmp/deploy_script.sh"
+
 
