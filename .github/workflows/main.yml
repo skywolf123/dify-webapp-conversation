@@ -32,7 +32,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
-
+  
     steps:
       - name: Update server 
         env:
@@ -43,11 +43,17 @@ jobs:
           echo "
           #!/bin/bash
           echo 'Starting deployment...'
+          
+          # 停止并删除现有容器
           docker stop dify-webapp || true
           echo 'Stopped existing container (if any).'
           
           docker rm dify-webapp || true
           echo 'Removed existing container (if any).'
+  
+          # 删除旧镜像
+          docker rmi ghcr.io/${{ github.repository }}/dify-webapp:latest || true
+          echo 'Removed existing image (if any).'
           
           echo '${{ secrets.MY_TOKEN }}' | docker login ghcr.io -u ${{ github.actor }} --password-stdin 
           echo 'Logged in to GitHub Container Registry.'
