@@ -19,6 +19,9 @@ COPY . .
 
 RUN yarn build
 
+# 检查构建输出
+RUN ls -la /app/.next
+
 # 这里就是打包完之后运行的版本
 FROM --platform=linux/amd64 node:20-alpine AS runner
 WORKDIR /app
