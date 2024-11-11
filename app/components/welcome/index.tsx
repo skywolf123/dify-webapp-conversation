@@ -84,18 +84,20 @@ const Welcome: FC<IWelcomeProps> = ({
   }
 
   const renderHeader = () => {
-    const [isNewsDropdownOpen, setIsNewsDropdownOpen] = useState<boolean>(false)
-    const [isArticleDropdownOpen, setIsArticleDropdownOpen] = useState<boolean>(false)
+    // const [isNewsDropdownOpen, setIsNewsDropdownOpen] = useState<boolean>(false)
+    // const [isArticleDropdownOpen, setIsArticleDropdownOpen] = useState<boolean>(false)
 
-    const newsCategories = [
-      '重看新闻列表', '热点新闻', '社会新闻', '国际新闻',
-      '经济金融新闻', '科技新闻', '娱乐新闻', '体育新闻'
-    ]
+    // const newsCategories = [
+    //   '重看新闻列表', '热点新闻', '社会新闻', '国际新闻',
+    //   '经济金融新闻', '科技新闻', '娱乐新闻', '体育新闻'
+    // ]
 
-    const articleTypes = [
-      '写文章', '写文章（都市观察者）', '写文章（序列微头条撰写者）'
-    ]
-    
+    // const articleTypes = [
+    //   '写文章', '写文章（都市观察者）', '写文章（序列微头条撰写者）'
+    // ]
+
+    // const toggleNewsDropdown = () => setIsNewsDropdownOpen(!isNewsDropdownOpen)
+    // const toggleArticleDropdown = () => setIsArticleDropdownOpen(!isArticleDropdownOpen)
     return (
       <div className='absolute top-0 left-0 right-0 flex items-center justify-between border-b border-gray-100 mobile:h-12 tablet:h-16 px-8 bg-white'>
         <div className='text-gray-900'>{conversationName}</div>
