@@ -103,7 +103,7 @@ const Welcome: FC<IWelcomeProps> = ({
         <div className='text-gray-900'>{conversationName}</div>
         <div className='flex items-center space-x-4'>
           {/* 新闻按钮及下拉箭头 */}
-          <div className='flex items-center relative text-sm text-primary-600 bg-blue-500 rounded'>
+          {/* <div className='flex items-center relative text-sm text-primary-600 bg-blue-500 rounded'>
             <div
               className='flex items-center cursor-pointer px-3 py-1'
               onClick={() => {
@@ -134,9 +134,9 @@ const Welcome: FC<IWelcomeProps> = ({
                 ))}
               </div>
             )}
-          </div>
+          </div> */}
           {/* 写文章按钮及下拉箭头 */}
-          <div className='flex items-center relative text-sm text-primary-600 bg-blue-500 rounded'>
+          {/* <div className='flex items-center relative text-sm text-primary-600 bg-blue-500 rounded'>
             <div
               className='flex items-center cursor-pointer px-3 py-1'
               onClick={() => {
@@ -167,7 +167,7 @@ const Welcome: FC<IWelcomeProps> = ({
                 ))}
               </div>
             )}
-          </div>
+          </div> */}
           {/* 功能介绍按钮 */}
           <button
             className='ml-4 px-3 py-1 text-sm text-primary-600 bg-blue-500 rounded'
