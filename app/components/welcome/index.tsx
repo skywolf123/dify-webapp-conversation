@@ -95,9 +95,7 @@ const Welcome: FC<IWelcomeProps> = ({
     const articleTypes = [
       '写文章', '写文章（都市观察者）', '写文章（序列微头条撰写者）'
     ]
-
-    const toggleNewsDropdown = () => setIsNewsDropdownOpen(!isNewsDropdownOpen)
-    const toggleArticleDropdown = () => setIsArticleDropdownOpen(!isArticleDropdownOpen)
+    
     return (
       <div className='absolute top-0 left-0 right-0 flex items-center justify-between border-b border-gray-100 mobile:h-12 tablet:h-16 px-8 bg-white'>
         <div className='text-gray-900'>{conversationName}</div>
