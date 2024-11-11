@@ -84,11 +84,11 @@ const Welcome: FC<IWelcomeProps> = ({
   }
 
   const renderHeader = () => {
-    const [isNewsDropdownOpen, setIsNewsDropdownOpen] = useState(false)
-    const [isArticleDropdownOpen, setIsArticleDropdownOpen] = useState(false)
+    const [isNewsDropdownOpen, setIsNewsDropdownOpen] = useState<boolean>(false)
+    const [isArticleDropdownOpen, setIsArticleDropdownOpen] = useState<boolean>(false)
 
     const newsCategories = [
-      '热点新闻', '社会新闻', '国际新闻',
+      '重看新闻列表', '热点新闻', '社会新闻', '国际新闻',
       '经济金融新闻', '科技新闻', '娱乐新闻', '体育新闻'
     ]
 
@@ -103,9 +103,9 @@ const Welcome: FC<IWelcomeProps> = ({
         <div className='text-gray-900'>{conversationName}</div>
         <div className='flex items-center space-x-4'>
           {/* 新闻按钮及下拉箭头 */}
-          <div className='flex items-center relative rounded'>
+          <div className='flex items-center relative text-sm text-primary-600 bg-blue-500 rounded'>
             <div
-              className='flex items-center cursor-pointer text-sm text-primary-600 bg-blue-500 px-3 py-1'
+              className='flex items-center cursor-pointer px-3 py-1'
               onClick={() => {
                 onButtonClick(newsCategories[0]) // 直接触发第一个按钮
               }}
@@ -113,13 +113,13 @@ const Welcome: FC<IWelcomeProps> = ({
               <span>{newsCategories[0]}</span>
             </div>
             <div
-              className='flex items-center cursor-pointer text-sm text-primary-600 bg-blue-500 px-3 py-1'
+              className='flex items-center cursor-pointer px-3 py-1'
               onClick={toggleNewsDropdown}
             >
               <ChevronDownIcon className='w-4 h-4 ml-1' />
             </div>
             {isNewsDropdownOpen && (
-              <div className='absolute top-full left-0 mt-1 bg-white border rounded shadow-lg z-10'>
+              <div className='absolute top-full left-0 mt-1 bg-white border rounded shadow-lg z-50'>
                 {newsCategories.slice(1).map((category, index) => (
                   <div
                     key={index}
@@ -136,9 +136,9 @@ const Welcome: FC<IWelcomeProps> = ({
             )}
           </div>
           {/* 写文章按钮及下拉箭头 */}
-          <div className='flex items-center relative rounded'>
+          <div className='flex items-center relative text-sm text-primary-600 bg-blue-500 rounded'>
             <div
-              className='flex items-center cursor-pointer text-sm text-primary-600 bg-blue-500 px-3 py-1'
+              className='flex items-center cursor-pointer px-3 py-1'
               onClick={() => {
                 onButtonClick(articleTypes[0]) // 直接触发第一个按钮
               }}
@@ -146,7 +146,7 @@ const Welcome: FC<IWelcomeProps> = ({
               <span>{articleTypes[0]}</span>
             </div>
             <div
-              className='flex items-center cursor-pointer text-sm text-primary-600 bg-blue-500 px-3 py-1'
+              className='flex items-center cursor-pointer px-3 py-1'
               onClick={toggleArticleDropdown}
             >
               <ChevronDownIcon className='w-4 h-4 ml-1' />
