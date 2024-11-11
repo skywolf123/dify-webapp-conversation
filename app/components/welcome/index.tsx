@@ -85,95 +85,96 @@ const Welcome: FC<IWelcomeProps> = ({
   const renderHeader = () => {
     const [isNewsDropdownOpen, setIsNewsDropdownOpen] = useState(false)
     const [isArticleDropdownOpen, setIsArticleDropdownOpen] = useState(false)
-  
+
     const newsCategories = [
-      '热点新闻', '社会新闻', '国际新闻', 
+      '热点新闻', '社会新闻', '国际新闻',
       '经济金融新闻', '科技新闻', '娱乐新闻', '体育新闻'
     ]
-  
+
     const articleTypes = [
       '写文章', '写文章（都市观察者）', '写文章（序列微头条撰写者）'
     ]
-  
+
     const toggleNewsDropdown = () => setIsNewsDropdownOpen(!isNewsDropdownOpen)
     const toggleArticleDropdown = () => setIsArticleDropdownOpen(!isArticleDropdownOpen)
     return (
       <div className='absolute top-0 left-0 right-0 flex items-center justify-between border-b border-gray-100 mobile:h-12 tablet:h-16 px-8 bg-white'>
         <div className='text-gray-900'>{conversationName}</div>
         <div className='flex items-center space-x-4'>
-        {/* 新闻按钮及下拉箭头 */}
-        <div className='flex items-center relative rounded'>
-          <div 
-            className='flex items-center cursor-pointer text-sm text-primary-600 bg-blue-500 px-3 py-1'
-            onClick={() => {
-              onButtonClick(newsCategories[0]) // 直接触发第一个按钮
-            }}
-          >
-            <span>{newsCategories[0]}</span>
-          </div>
-          <div 
-            className='flex items-center cursor-pointer text-sm text-primary-600 bg-blue-500 px-3 py-1'
-            onClick={toggleNewsDropdown}
-          >
-            <ChevronDownIcon className='w-4 h-4 ml-1' />
-          </div>
-          {isNewsDropdownOpen && (
-            <div className='absolute top-full left-0 mt-1 bg-white border rounded shadow-lg z-10'>
-              {newsCategories.slice(1).map((category, index) => (
-                <div 
-                  key={index} 
-                  className='px-3 py-2 hover:bg-gray-100 cursor-pointer'
-                  onClick={() => {
-                    onButtonClick(category)
-                    setIsNewsDropdownOpen(false)
-                  }}
-                >
-                  {category}
-                </div>
-              ))}
+          {/* 新闻按钮及下拉箭头 */}
+          <div className='flex items-center relative rounded'>
+            <div
+              className='flex items-center cursor-pointer text-sm text-primary-600 bg-blue-500 px-3 py-1'
+              onClick={() => {
+                onButtonClick(newsCategories[0]) // 直接触发第一个按钮
+              }}
+            >
+              <span>{newsCategories[0]}</span>
             </div>
-          )}
-        </div>
-        {/* 写文章按钮及下拉箭头 */}
-        <div className='flex items-center relative rounded'>
-          <div 
-            className='flex items-center cursor-pointer text-sm text-primary-600 bg-blue-500 px-3 py-1'
-            onClick={() => {
-              onButtonClick(articleTypes[0]) // 直接触发第一个按钮
-            }}
-          >
-            <span>{articleTypes[0]}</span>
-          </div>
-          <div 
-            className='flex items-center cursor-pointer text-sm text-primary-600 bg-blue-500 px-3 py-1'
-            onClick={toggleArticleDropdown}
-          >
-            <ChevronDownIcon className='w-4 h-4 ml-1' />
-          </div>
-          {isArticleDropdownOpen && (
-            <div className='absolute top-full left-0 mt-1 bg-white border rounded shadow-lg z-10'>
-              {articleTypes.slice(1).map((type, index) => (
-                <div 
-                  key={index} 
-                  className='px-3 py-2 hover:bg-gray-100 cursor-pointer'
-                  onClick={() => {
-                    onButtonClick(type)
-                    setIsArticleDropdownOpen(false)
-                  }}
-                >
-                  {type}
-                </div>
-              ))}
+            <div
+              className='flex items-center cursor-pointer text-sm text-primary-600 bg-blue-500 px-3 py-1'
+              onClick={toggleNewsDropdown}
+            >
+              <ChevronDownIcon className='w-4 h-4 ml-1' />
             </div>
-          )}
+            {isNewsDropdownOpen && (
+              <div className='absolute top-full left-0 mt-1 bg-white border rounded shadow-lg z-10'>
+                {newsCategories.slice(1).map((category, index) => (
+                  <div
+                    key={index}
+                    className='px-3 py-2 hover:bg-gray-100 cursor-pointer'
+                    onClick={() => {
+                      onButtonClick(category)
+                      setIsNewsDropdownOpen(false)
+                    }}
+                  >
+                    {category}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          {/* 写文章按钮及下拉箭头 */}
+          <div className='flex items-center relative rounded'>
+            <div
+              className='flex items-center cursor-pointer text-sm text-primary-600 bg-blue-500 px-3 py-1'
+              onClick={() => {
+                onButtonClick(articleTypes[0]) // 直接触发第一个按钮
+              }}
+            >
+              <span>{articleTypes[0]}</span>
+            </div>
+            <div
+              className='flex items-center cursor-pointer text-sm text-primary-600 bg-blue-500 px-3 py-1'
+              onClick={toggleArticleDropdown}
+            >
+              <ChevronDownIcon className='w-4 h-4 ml-1' />
+            </div>
+            {isArticleDropdownOpen && (
+              <div className='absolute top-full left-0 mt-1 bg-white border rounded shadow-lg z-10'>
+                {articleTypes.slice(1).map((type, index) => (
+                  <div
+                    key={index}
+                    className='px-3 py-2 hover:bg-gray-100 cursor-pointer'
+                    onClick={() => {
+                      onButtonClick(type)
+                      setIsArticleDropdownOpen(false)
+                    }}
+                  >
+                    {type}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          {/* 功能介绍按钮 */}
+          <button
+            className='ml-4 px-3 py-1 text-sm text-primary-600 bg-blue-500 rounded'
+            onClick={() => onButtonClick('功能介绍')}
+          >
+            功能介绍
+          </button>
         </div>
-        {/* 功能介绍按钮 */}
-        <button
-          className='ml-4 px-3 py-1 text-sm text-primary-600 bg-blue-500 rounded'
-          onClick={() => onButtonClick('功能介绍')}
-        >
-          功能介绍
-        </button>
       </div>
     )
   }
@@ -431,7 +432,7 @@ const Welcome: FC<IWelcomeProps> = ({
               : <div>
               </div>}
             <a className='flex items-center pr-3 space-x-3' href="https://toutiaowriter.cyzlab.cn/" target="_blank">
-            {/* <a className='flex items-center pr-3 space-x-3' href="https://dify.ai/" target="_blank"> */}
+              {/* <a className='flex items-center pr-3 space-x-3' href="https://dify.ai/" target="_blank"> */}
               <span className='uppercase'>{t('app.chat.powerBy')}</span>
               <FootLogo />
             </a>
