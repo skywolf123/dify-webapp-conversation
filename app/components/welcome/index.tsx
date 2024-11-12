@@ -107,13 +107,13 @@ const Welcome: FC<IWelcomeProps> = ({
         <div className='text-gray-900'>{conversationName}</div>
         <div className='flex items-center space-x-4'>
           <Dropdown
-            title={newsCategories[0].label}
-            items={newsCategories.slice(1)}
+            title="搜寻新闻"
+            items={newsCategories}
             onSelect={(item) => onButtonClick(item.label)}
           />
           <Dropdown
-            title={articleTypes[0].label}
-            items={articleTypes.slice(1)}
+            title="撰写文章"
+            items={articleTypes}
             onSelect={(item) => onButtonClick(item.label)}
           />
           <button
