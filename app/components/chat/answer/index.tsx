@@ -316,7 +316,7 @@ const Answer: FC<IAnswerProps> = ({
               {/* User feedback must be displayed */}
               {!feedbackDisabled && renderFeedbackRating(feedback?.rating)}
             </div>
-            <div className="absolute left-[-50px] bottom-0 flex flex-col gap-2">
+            <div className="absolute left-[-60px] bottom-0 flex flex-col justify-end gap-2">
               {!feedbackDisabled && !item.feedbackDisabled && renderItemOperation()}
               {/* User feedback must be displayed */}
               {!feedbackDisabled && renderFeedbackRating(feedback?.rating)}
