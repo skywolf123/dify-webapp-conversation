@@ -221,10 +221,10 @@ const Answer: FC<IAnswerProps> = ({
     return (
       <div className={`${s.itemOperation} flex gap-2`}>
         <Tooltip selector={`copy-button-${randomString(16)}`} content={'复制'}>
-          {OperationBtn({ innerContent: <IconWrapper>{isCopied ? <ClipboardCheckSolidIcon className="w-6 h-6" /> : <ClipboardSolidIcon className="w-6 h-6" />}</IconWrapper>, onClick: handleCopy })}
+          {OperationBtn({ innerContent: <IconWrapper>{isCopied ? <ClipboardCheckSolidIcon className="w-4 h-4" /> : <ClipboardSolidIcon className="w-4 h-4" />}</IconWrapper>, onClick: handleCopy })}
         </Tooltip>
         <Tooltip selector={`copy-markdown-button-${randomString(16)}`} content={'复制文本'}>
-          {OperationBtn({ innerContent: <IconWrapper>{isMarkdownCopied ? <ClipboardCheckIcon className="w-6 h-6" /> : <ClipboardIcon className="w-6 h-6" />}</IconWrapper>, onClick: handleCopyMarkdown })}
+          {OperationBtn({ innerContent: <IconWrapper>{isMarkdownCopied ? <ClipboardCheckIcon className="w-4 h-4" /> : <ClipboardIcon className="w-4 h-4" />}</IconWrapper>, onClick: handleCopyMarkdown })}
         </Tooltip>
         {/* {userOperation()} */}
       </div>

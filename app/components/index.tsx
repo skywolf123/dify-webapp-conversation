@@ -552,7 +552,7 @@ const Main: FC = () => {
         setChatList(produce(getChatList(), (draft) => {
           draft.splice(draft.findIndex(item => item.id === placeholderAnswerId), 1)
         }))
-        handleConversationSwitch()
+        setCurrConversationId(prevTempNewConversationId, APP_ID)
       },
       onWorkflowStarted: ({ workflow_run_id, task_id }) => {
         // taskIdRef.current = task_id
