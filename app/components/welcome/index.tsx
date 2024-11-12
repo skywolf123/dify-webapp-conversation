@@ -8,6 +8,7 @@ import { AppInfoComp, ChatBtn, EditBtn, FootLogo, PromptTemplate } from './massi
 import type { AppInfo, PromptConfig } from '@/types/app'
 import Toast from '@/app/components/base/toast'
 import Select from '@/app/components/base/select'
+import Dropdown from '@/app/components/base/dropdown'
 import { DEFAULT_VALUE_MAX_LEN } from '@/config'
 import { ChevronDownIcon } from '@heroicons/react/24/solid'
 
@@ -83,93 +84,38 @@ const Welcome: FC<IWelcomeProps> = ({
     notify({ type: 'error', message, duration: 3000 })
   }
 
-  const [isNewsDropdownOpen, setIsNewsDropdownOpen] = useState<boolean>(false)
-  const [isArticleDropdownOpen, setIsArticleDropdownOpen] = useState<boolean>(false)
-
-  const newsCategories = [
-    '重看新闻列表', '热点新闻', '社会新闻', '国际新闻',
-    '经济金融新闻', '科技新闻', '娱乐新闻', '体育新闻'
-  ]
-
-  const articleTypes = [
-    '写文章', '写文章（都市观察者）', '写文章（序列微头条撰写者）'
-  ]
-
-  const toggleNewsDropdown = () => setIsNewsDropdownOpen(!isNewsDropdownOpen)
-  const toggleArticleDropdown = () => setIsArticleDropdownOpen(!isArticleDropdownOpen)
-
   const renderHeader = () => {
+    const newsCategories = [
+      { value: '1', label: '重看新闻列表' },
+      { value: '2', label: '热点新闻' },
+      { value: '3', label: '社会新闻' },
+      { value: '4', label: '国际新闻' },
+      { value: '5', label: '经济金融新闻' },
+      { value: '6', label: '科技新闻' },
+      { value: '7', label: '娱乐新闻' },
+      { value: '8', label: '体育新闻' }
+    ]
+
+    const articleTypes = [
+      { value: '1', label: '写文章' },
+      { value: '2', label: '写文章（都市观察者）' },
+      { value: '3', label: '写文章（序列微头条撰写者）' }
+    ]
+
     return (
       <div className='absolute top-0 left-0 right-0 flex items-center justify-between border-b border-gray-100 mobile:h-12 tablet:h-16 px-8 bg-white'>
         <div className='text-gray-900'>{conversationName}</div>
         <div className='flex items-center space-x-4'>
-          {/* 新闻按钮及下拉箭头 */}
-          <div className='flex items-center relative text-sm text-primary-600 bg-blue-500 rounded'>
-            <div
-              className='flex items-center cursor-pointer px-3 py-1'
-              onClick={() => {
-                onButtonClick(newsCategories[0]) // 直接触发第一个按钮
-              }}
-            >
-              <span>{newsCategories[0]}</span>
-            </div>
-            <div
-              className='flex items-center cursor-pointer px-3 py-1'
-              onClick={toggleNewsDropdown}
-            >
-              <ChevronDownIcon className='w-4 h-4 ml-1' />
-            </div>
-            {isNewsDropdownOpen && (
-              <div className='absolute top-full left-0 mt-1 bg-white border rounded shadow-lg z-50'>
-                {newsCategories.slice(1).map((category, index) => (
-                  <div
-                    key={index}
-                    className='px-3 py-2 hover:bg-gray-100 cursor-pointer'
-                    onClick={() => {
-                      onButtonClick(category)
-                      setIsNewsDropdownOpen(false)
-                    }}
-                  >
-                    {category}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-          {/* 写文章按钮及下拉箭头 */}
-          <div className='flex items-center relative text-sm text-primary-600 bg-blue-500 rounded'>
-            <div
-              className='flex items-center cursor-pointer px-3 py-1'
-              onClick={() => {
-                onButtonClick(articleTypes[0]) // 直接触发第一个按钮
-              }}
-            >
-              <span>{articleTypes[0]}</span>
-            </div>
-            <div
-              className='flex items-center cursor-pointer px-3 py-1'
-              onClick={toggleArticleDropdown}
-            >
-              <ChevronDownIcon className='w-4 h-4 ml-1' />
-            </div>
-            {isArticleDropdownOpen && (
-              <div className='absolute top-full left-0 mt-1 bg-white border rounded shadow-lg z-50'>
-                {articleTypes.slice(1).map((type, index) => (
-                  <div
-                    key={index}
-                    className='px-3 py-2 hover:bg-gray-100 cursor-pointer'
-                    onClick={() => {
-                      onButtonClick(type)
-                      setIsArticleDropdownOpen(false)
-                    }}
-                  >
-                    {type}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-          {/* 功能介绍按钮 */}
+          <Dropdown
+            title={newsCategories[0].label}
+            items={newsCategories.slice(1)}
+            onSelect={(item) => onButtonClick(item.label)}
+          />
+          <Dropdown
+            title={articleTypes[0].label}
+            items={articleTypes.slice(1)}
+            onSelect={(item) => onButtonClick(item.label)}
+          />
           <button
             className='ml-4 px-3 py-1 text-sm text-primary-600 bg-blue-500 rounded'
             onClick={() => onButtonClick('功能介绍')}
