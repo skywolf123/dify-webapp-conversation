@@ -317,7 +317,7 @@ const Answer: FC<IAnswerProps> = ({
               {!feedbackDisabled && renderFeedbackRating(feedback?.rating)}
             </div>
             {(content?.length ?? 0) > 200 && (
-              <div className="absolute left-[-55px] bottom-[-5px] flex flex-col justify-end gap-2">
+              <div className="absolute left-[-55px] bottom-5 flex flex-col justify-end gap-2">
                 {!feedbackDisabled && !item.feedbackDisabled && renderItemOperation()}
                 {/* User feedback must be displayed */}
                 {!feedbackDisabled && renderFeedbackRating(feedback?.rating)}
