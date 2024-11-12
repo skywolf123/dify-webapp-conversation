@@ -11,7 +11,7 @@ export const APP_INFO: AppInfo = {
   icon: '💯'
 }
 
-export const isShowPrompt = false
+export const isShowPrompt = true
 export const promptTemplate = ''
 
 export const API_PREFIX = '/api'
