@@ -221,10 +221,10 @@ const Answer: FC<IAnswerProps> = ({
     return (
       <div className={`${s.itemOperation} flex gap-2`}>
         <Tooltip selector={`copy-button-${randomString(16)}`} content={'复制'}>
-          {OperationBtn({ innerContent: <IconWrapper>{isCopied ? <ClipboardCheckSolidIcon className="w-6 h-6"/> : <ClipboardSolidIcon className="w-6 h-6"/>}</IconWrapper>, onClick: handleCopy })}
+          {OperationBtn({ innerContent: <IconWrapper>{isCopied ? <ClipboardCheckSolidIcon className="w-6 h-6" /> : <ClipboardSolidIcon className="w-6 h-6" />}</IconWrapper>, onClick: handleCopy })}
         </Tooltip>
         <Tooltip selector={`copy-markdown-button-${randomString(16)}`} content={'复制文本'}>
-          {OperationBtn({ innerContent: <IconWrapper>{isMarkdownCopied ? <ClipboardCheckIcon className="w-6 h-6"/> : <ClipboardIcon className="w-6 h-6"/>}</IconWrapper>, onClick: handleCopyMarkdown })}
+          {OperationBtn({ innerContent: <IconWrapper>{isMarkdownCopied ? <ClipboardCheckIcon className="w-6 h-6" /> : <ClipboardIcon className="w-6 h-6" />}</IconWrapper>, onClick: handleCopyMarkdown })}
         </Tooltip>
         {/* {userOperation()} */}
       </div>
@@ -316,11 +316,13 @@ const Answer: FC<IAnswerProps> = ({
               {/* User feedback must be displayed */}
               {!feedbackDisabled && renderFeedbackRating(feedback?.rating)}
             </div>
+            {(content?.length ?? 0) > 200 &&（
             <div className="absolute left-[-55px] bottom-[-5px] flex flex-col justify-end gap-2">
-              {!feedbackDisabled && !item.feedbackDisabled && renderItemOperation()}
+              {!feedbackDisabled && !item.feedbackDisabled &&  && renderItemOperation()}
               {/* User feedback must be displayed */}
               {!feedbackDisabled && renderFeedbackRating(feedback?.rating)}
             </div>
+            ）}
           </div>
         </div>
       </div>
