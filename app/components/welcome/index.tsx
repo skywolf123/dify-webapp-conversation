@@ -97,9 +97,9 @@ const Welcome: FC<IWelcomeProps> = ({
     ]
 
     const articleTypes = [
-      { value: '1', label: '写文章' },
-      { value: '2', label: '写文章（都市观察者）' },
-      { value: '3', label: '写文章（序列微头条撰写者）' }
+      { value: '1', label: '洗稿（通用）' },
+      { value: '2', label: '洗稿（都市观察者）' },
+      { value: '3', label: '洗稿（序列微头条）' }
     ]
 
     return (
@@ -112,7 +112,7 @@ const Welcome: FC<IWelcomeProps> = ({
             onSelect={(item) => onButtonClick(item.label)}
           />
           <Dropdown
-            title="撰写文章"
+            title="洗稿"
             items={articleTypes}
             onSelect={(item) => onButtonClick(item.label)}
           />
