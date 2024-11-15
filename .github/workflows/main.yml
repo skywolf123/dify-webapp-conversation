@@ -3,7 +3,7 @@ name: Build and Deploy Docker Image
 on:
   push:
     branches:
-      - docker  # 您可以指定要触发的分支
+      - dev  # 您可以指定要触发的分支
 
 jobs:
   build:
