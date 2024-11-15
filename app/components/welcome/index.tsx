@@ -123,7 +123,7 @@ const Welcome: FC<IWelcomeProps> = ({
           />
           <Dropdown
             title="故事"
-            items={articleTypes}
+            items={storyTypes}
             onSelect={(item) => onButtonClick(item.label)}
           />
           <button
