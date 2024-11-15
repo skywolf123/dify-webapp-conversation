@@ -8,7 +8,9 @@ import { AppInfoComp, ChatBtn, EditBtn, FootLogo, PromptTemplate } from './massi
 import type { AppInfo, PromptConfig } from '@/types/app'
 import Toast from '@/app/components/base/toast'
 import Select from '@/app/components/base/select'
+import Dropdown from '@/app/components/base/dropdown'
 import { DEFAULT_VALUE_MAX_LEN } from '@/config'
+import { ChevronDownIcon } from '@heroicons/react/24/solid'
 
 // regex to match the {{}} and replace it with a span
 const regex = /\{\{([^}]+)\}\}/g
@@ -83,15 +85,44 @@ const Welcome: FC<IWelcomeProps> = ({
   }
 
   const renderHeader = () => {
+    const newsCategories = [
+      { value: '1', label: '重看新闻列表' },
+      { value: '2', label: '热点新闻' },
+      { value: '3', label: '社会新闻' },
+      { value: '4', label: '国际新闻' },
+      { value: '5', label: '经济金融新闻' },
+      { value: '6', label: '科技新闻' },
+      { value: '7', label: '娱乐新闻' },
+      { value: '8', label: '体育新闻' }
+    ]
+
+    const articleTypes = [
+      { value: '1', label: '写文章' },
+      { value: '2', label: '写文章（都市观察者）' },
+      { value: '3', label: '写文章（序列微头条撰写者）' }
+    ]
+
     return (
       <div className='absolute top-0 left-0 right-0 flex items-center justify-between border-b border-gray-100 mobile:h-12 tablet:h-16 px-8 bg-white'>
         <div className='text-gray-900'>{conversationName}</div>
-        <button
-          className='ml-4 px-3 py-1 text-sm text-primary-600 bg-blue-500 rounded'
-          onClick={() => onButtonClick('功能介绍')}
-        >
-          功能介绍
-        </button>
+        <div className='flex items-center space-x-4'>
+          <Dropdown
+            title="搜寻新闻"
+            items={newsCategories}
+            onSelect={(item) => onButtonClick(item.label)}
+          />
+          <Dropdown
+            title="撰写文章"
+            items={articleTypes}
+            onSelect={(item) => onButtonClick(item.label)}
+          />
+          <button
+            className='ml-4 px-3 py-1 text-sm text-primary-600 bg-blue-500 rounded'
+            onClick={() => onButtonClick('功能介绍')}
+          >
+            功能介绍
+          </button>
+        </div>
       </div>
     )
   }
@@ -349,7 +380,7 @@ const Welcome: FC<IWelcomeProps> = ({
               : <div>
               </div>}
             <a className='flex items-center pr-3 space-x-3' href="https://toutiaowriter.cyzlab.cn/" target="_blank">
-            {/* <a className='flex items-center pr-3 space-x-3' href="https://dify.ai/" target="_blank"> */}
+              {/* <a className='flex items-center pr-3 space-x-3' href="https://dify.ai/" target="_blank"> */}
               <span className='uppercase'>{t('app.chat.powerBy')}</span>
               <FootLogo />
             </a>
