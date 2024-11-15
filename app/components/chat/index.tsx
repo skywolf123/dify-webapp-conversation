@@ -101,7 +101,7 @@ const Chat: FC<IChatProps> = ({
   }
 
   const handleKeyUp = (e: any) => {
-    if (e.code === 'Enter') {
+    if (e.code === 'Enter' && e.ctrlKey) {
       e.preventDefault()
       // prevent send message when using input method enter
       if (!e.shiftKey && !isUseInputMethod.current)
@@ -109,13 +109,13 @@ const Chat: FC<IChatProps> = ({
     }
   }
 
-  const handleKeyDown = (e: any) => {
-    isUseInputMethod.current = e.nativeEvent.isComposing
-    if (e.code === 'Enter' && !e.shiftKey) {
-      setQuery(query.replace(/\n$/, ''))
-      e.preventDefault()
-    }
-  }
+  // const handleKeyDown = (e: any) => {
+  //   isUseInputMethod.current = e.nativeEvent.isComposing
+  //   if (e.code === 'Enter' && !e.shiftKey) {
+  //     setQuery(query.replace(/\n$/, ''))
+  //     e.preventDefault()
+  //   }
+  // }
 
   // 处理按钮点击事件
   const handleButtonClick = (buttonText: string) => {
@@ -185,7 +185,7 @@ const Chat: FC<IChatProps> = ({
                 value={query}
                 onChange={handleContentChange}
                 onKeyUp={handleKeyUp}
-                onKeyDown={handleKeyDown}
+                // onKeyDown={handleKeyDown}
                 autoSize
               />
               <div className="absolute bottom-2 right-2 flex items-center h-8">
@@ -194,8 +194,8 @@ const Chat: FC<IChatProps> = ({
                   selector='send-tip'
                   htmlContent={
                     <div>
-                      <div>{t('common.operation.send')} Enter</div>
-                      <div>{t('common.operation.lineBreak')} Shift Enter</div>
+                      <div>{t('common.operation.send')} Ctrl + Enter</div>
+                      <div>{t('common.operation.lineBreak')} Enter</div>
                     </div>
                   }
                 >
