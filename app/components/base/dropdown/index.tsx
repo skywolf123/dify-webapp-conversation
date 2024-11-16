@@ -25,7 +25,7 @@ const Dropdown: FC<DropdownProps> = ({ title, items, onSelect }) => {
                     <ChevronDownIcon className="h-4 w-4" />
                 </Menu.Button>
             </div>
-            <Menu.Items className="absolute z-50 mt-2 w-52 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            <Menu.Items className="absolute z-50 mt-2 w-40 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                 {items.map((item) => (
                     <Menu.Item key={item.value}>
                         {({ active }) => (
