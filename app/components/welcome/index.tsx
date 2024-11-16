@@ -86,25 +86,25 @@ const Welcome: FC<IWelcomeProps> = ({
 
   const renderHeader = () => {
     const newsCategories = [
-      { value: '1', label: '重看新闻列表' },
-      { value: '2', label: '热点新闻' },
-      { value: '3', label: '社会新闻' },
-      { value: '4', label: '国际新闻' },
-      { value: '5', label: '经济金融新闻' },
-      { value: '6', label: '科技新闻' },
-      { value: '7', label: '娱乐新闻' },
-      { value: '8', label: '体育新闻' }
+      { value: '1', icon: '📜', label: '重看新闻列表' },
+      { value: '2', icon: '🔥', label: '热点新闻' },
+      { value: '3', icon: '🤝', label: '社会新闻' },
+      { value: '4', icon: '🌐', label: '国际新闻' },
+      { value: '5', icon: '💰', label: '经济金融新闻' },
+      { value: '6', icon: '🖥️', label: '科技新闻' },
+      { value: '7', icon: '🎉', label: '娱乐新闻' },
+      { value: '8', icon: '⚽', label: '体育新闻' }
     ]
 
     const articleTypes = [
-      { value: '1', label: '洗稿（通用）' },
-      { value: '2', label: '洗稿（都市观察者）' },
-      { value: '3', label: '洗稿（序列微头条）' }
+      { value: '1', icon: '✏️', label: '洗稿（通用）' },
+      { value: '2', icon: '🏙️', label: '洗稿（都市观察者）' },
+      { value: '3', icon: '📰', label: '洗稿（序列微头条）' }
     ]
 
     const storyTypes = [
-      { value: '1', label: '情感故事' },
-      { value: '2', label: '职场故事' }
+      { value: '1', icon: '❤️', label: '情感故事' },
+      { value: '2', icon: '💼', label: '职场故事' }
     ]
 
     return (
@@ -112,17 +112,17 @@ const Welcome: FC<IWelcomeProps> = ({
         <div className='text-gray-900'>{conversationName}</div>
         <div className='flex items-center space-x-4'>
           <Dropdown
-            title="搜寻新闻"
+            title="🔍搜寻新闻"
             items={newsCategories}
             onSelect={(item) => onButtonClick(item.label)}
           />
           <Dropdown
-            title="洗稿"
+            title="🚿洗稿"
             items={articleTypes}
             onSelect={(item) => onButtonClick(item.label)}
           />
           <Dropdown
-            title="故事"
+            title="📖故事"
             items={storyTypes}
             onSelect={(item) => onButtonClick(item.label)}
           />
@@ -130,7 +130,7 @@ const Welcome: FC<IWelcomeProps> = ({
             className='ml-4 px-3 py-1 text-sm text-primary-600 bg-blue-500 rounded'
             onClick={() => onButtonClick('功能介绍')}
           >
-            功能介绍
+            📚功能介绍
           </button>
         </div>
       </div>
