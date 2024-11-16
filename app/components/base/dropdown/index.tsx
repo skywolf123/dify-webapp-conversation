@@ -7,6 +7,7 @@ import classNames from 'classnames'
 
 type DropdownItem = {
     value: string | number
+    icon: string
     label: string
 }
 
@@ -36,7 +37,7 @@ const Dropdown: FC<DropdownProps> = ({ title, items, onSelect }) => {
                                 )}
                                 onClick={() => onSelect(item)}
                             >
-                                {item.label}
+                                {item.icon}{item.label}
                             </div>
                         )}
                     </Menu.Item>
