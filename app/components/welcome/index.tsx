@@ -107,6 +107,11 @@ const Welcome: FC<IWelcomeProps> = ({
       { value: '2', icon: '💼', label: '职场故事' }
     ]
 
+    const smallStoryTypes = [
+      { value: '1', icon: '❤️', label: '情感小故事' },
+      { value: '2', icon: '💼', label: '职场小故事' }
+    ]
+
     return (
       <div className='absolute top-0 left-0 right-0 flex items-center justify-between border-b border-gray-100 mobile:h-12 tablet:h-16 px-8 bg-white'>
         <div className='text-gray-900'>{conversationName}</div>
@@ -124,6 +129,11 @@ const Welcome: FC<IWelcomeProps> = ({
           <Dropdown
             title="📖故事"
             items={storyTypes}
+            onSelect={(item) => onButtonClick(item.label)}
+          />
+          <Dropdown
+            title="🎒小故事"
+            items={smallStoryTypes}
             onSelect={(item) => onButtonClick(item.label)}
           />
           <button
